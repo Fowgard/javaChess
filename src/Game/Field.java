@@ -1,6 +1,6 @@
+package Game;
 
 public class Field {
-
 	int col;
 	int row;
 	private Figure figure;
