@@ -1,15 +1,20 @@
 package application;
 	
+
+
 import javafx.application.Application;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 
 
@@ -25,7 +30,22 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			
-			GridPane root = new GridPane();
+			//main border pane
+			BorderPane borderpane = new BorderPane();
+			
+			//pane with chess
+			GridPane chesspane = new GridPane();
+			chesspane.setPadding(new Insets(10,20,20,20));
+			
+			//pane with controls
+			HBox controls = new HBox();
+			controls.setPadding(new Insets(20,20,10,20));
+			Button undoButton = new Button("Undo");
+		
+			Button redoButton = new Button("Redo");
+			controls.getChildren().addAll(undoButton, redoButton);
+			
+			
 	        int size = 8 ;
 	        for (int row = 0; row < size; row++) {
 	            for (int col = 0; col < size; col ++) {
@@ -37,7 +57,7 @@ public class Main extends Application {
 	                    color = "black";
 	                }
 	                square.setStyle("-fx-background-color: "+color+";");
-	                root.add(square, col, row);
+	                chesspane.add(square, col, row);
 	            }
 	        }
 	        
@@ -46,16 +66,22 @@ public class Main extends Application {
 	        
 	        
 	        for (int i = 0; i < size; i++) {
-	            root.getColumnConstraints().add(new ColumnConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
-	            root.getRowConstraints().add(new RowConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.CENTER, true));
+	            chesspane.getColumnConstraints().add(new ColumnConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
+	            chesspane.getRowConstraints().add(new RowConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.CENTER, true));
 	        }
-	        root.getColumnConstraints().add(new ColumnConstraints(50, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
-	        
+	        //root.getColumnConstraints().add(new ColumnConstraints(50, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true)).add(new ColumnConstraints(50, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
 	        StackPane square = new StackPane();
 	        square.setStyle("-fx-background-color: "+"green"+";");
-            root.add(new Button(), 8, 0);
+            borderpane.setRight((new Button()));
 	        
-	        primaryStage.setScene(new Scene(root, 400, 400));
+            //put it together
+            borderpane.setCenter(chesspane);
+            borderpane.setTop(controls);
+            
+            
+            
+            
+	        primaryStage.setScene(new Scene(borderpane, 400, 400));
 	        primaryStage.show();
 			
 		} catch(Exception e) {
