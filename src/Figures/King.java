@@ -1,19 +1,29 @@
 package Figures;
+import java.io.FileInputStream;
+
 import Game.Board;
 import Game.Field;
 import Game.Figure;
+import javafx.scene.image.Image;
 
 public class King implements Figure{
 	private int col;
 	private int row;
 	private boolean isWhite;
 	private int type;
+	private Image icon;
+	
 	public King(int col, int row, boolean isWhite)
 	{
 		this.col =col;
 		this.row =row;
 		this.isWhite = isWhite;
 		this.type = 6;
+		try{this.icon = new Image(new FileInputStream("lib/"+this.isWhite+"/King.png"));
+		}
+		catch(Exception e) {
+			try{this.icon = new Image(new FileInputStream("lib\\"+this.isWhite+"\\King.png"));}catch(Exception ex) {System.out.println("Error");};
+		};
 	}
 	@Override
 	public boolean canmove(Field field, Board board) {
@@ -65,5 +75,9 @@ public class King implements Figure{
 	public void updateRC(Field field) {
 		this.row = field.getRow();
 		this.col = field.getCol();
+	}
+	@Override
+	public Image getIcon() {
+		return this.icon;
 	}
 }

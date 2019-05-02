@@ -1,19 +1,29 @@
 package Figures;
+import java.io.FileInputStream;
+
 import Game.Board;
 import Game.Field;
 import Game.Figure;
+import javafx.scene.image.Image;
 
 public class Rook implements Figure{
 	private int col;
 	private int row;
 	private boolean isWhite;
 	private int type;
+	private Image icon;
+	
 	public Rook(int col, int row, boolean isWhite)
 	{
 		this.col =col;
 		this.row =row;
 		this.isWhite = isWhite;
 		this.type = 2;
+		try{this.icon = new Image(new FileInputStream("lib/"+this.isWhite+"/Rook.png"));
+		}
+		catch(Exception e) {
+			try{this.icon = new Image(new FileInputStream("lib\\"+this.isWhite+"\\Rook.png"));}catch(Exception ex) {System.out.println("Error");};
+		};
 	}
 	@Override
 	public boolean canmove(Field field, Board board) {
@@ -37,7 +47,7 @@ public class Rook implements Figure{
 			for(int i = 1; i< Math.abs(field.getRow()-this.row);i++)
 			{
 				y += dy;
-				if(!board.getField(x+1, y+1).isEmpty())
+				if(!board.getField(x, y).isEmpty())
 					return false;
 			}
 		}
@@ -50,7 +60,7 @@ public class Rook implements Figure{
 			for(int i = 1; i< Math.abs(field.getCol()-this.col);i++)
 			{
 				x += dx;
-				if(!board.getField(x+1, y+1).isEmpty())
+				if(!board.getField(x, y).isEmpty())
 					return false;
 			}
 		}
@@ -81,5 +91,9 @@ public class Rook implements Figure{
 	public void updateRC(Field field) {
 		this.row = field.getRow();
 		this.col = field.getCol();
+	}
+	@Override
+	public Image getIcon() {
+		return this.icon;
 	}
 }

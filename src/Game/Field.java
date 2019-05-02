@@ -1,12 +1,16 @@
 package Game;
 
-public class Field {
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+
+public class Field extends Button{
 	int col;
 	int row;
 	private Figure figure;
 	
 	public Field(int col, int row)
 	{
+		super();
 		this.col = col;
 		this.row = row;
 	}
@@ -18,6 +22,11 @@ public class Field {
 	public void setFigure(Figure figure)
 	{
 		this.figure = figure;
+		
+		 if (this.figure != null)
+			 this.setGraphic( new ImageView ( figure.getIcon() ) );
+	     else
+	         this.setGraphic( new ImageView() );
 	}
 	
 	public Figure getFigure() {

@@ -36,17 +36,11 @@ public class ChessGame {
         this.board.field[5][7].setFigure(new Bishop(5,7,false));
         this.board.field[3][0].setFigure(new Queen(3,0,true));
         this.board.field[3][7].setFigure(new Queen(3,7,false));
-        this.board.field[4][7].setFigure(new King(4,7,true));
+        this.board.field[4][0].setFigure(new King(4,0,true));
         this.board.field[4][7].setFigure(new King(4,7,false));        
 	}
 	
-	
-	public boolean move(Figure figure, Field field) {
-		if(figure == null)
-			return false;
-		if(!figure.canmove(field,board))
-			return false;
-		
+	public void addHistory() {
 		Figure[][] figures = new Figure[8][8];
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
@@ -79,7 +73,13 @@ public class ChessGame {
         
 		this.history.add(figures);
 		this.histIndex ++;
-		
+	}
+	
+	public boolean move(Figure figure, Field field) {
+		if(figure == null)
+			return false;
+		if(!figure.canmove(field,board))
+			return false;
 		
 		try
 		{
@@ -128,17 +128,19 @@ public class ChessGame {
 		this.board.field[figure.getCol()][figure.getRow()].removeFigure();
 		figure.updateRC(field);
 		
+		addHistory();
+		
 		return true;
 	}
 
 	public void undo() {
+        this.histIndex--;
 		Figure[][] figures = history.get(this.histIndex);
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
             	this.board.getField(x,y).setFigure(figures[x][y]);
             }
          }
-        this.histIndex--;
 	}
 	
 	public void redo(){
