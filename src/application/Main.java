@@ -2,6 +2,8 @@ package application;
 	
 
 
+import java.io.IOException;
+
 import Game.ChessGame;
 import Game.Field;
 import Game.Figure;
@@ -10,9 +12,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -32,20 +36,34 @@ import javafx.scene.layout.Priority;
 
 
 
-public class Main extends Application{// implements EventHandler<ActionEvent>{
+
+public class Main extends Application  implements EventHandler<ActionEvent>{
 	Button undoButton;
 	Button redoButton;
 	ChessGame game;
+	boolean figureMove;//choosing figure or moving figure
+	boolean whitesMove;
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws IOException {
 		init();
-		/*try {
+		
+		//use fxml
+		Parent root = FXMLLoader.load(getClass().getResource("Chess.fxml"));
+		//primaryStage.setTitle("CHEESE");
+		//primaryStage.setScene(new Scene(root,400,400));
+		//primaryStage.show();
+		
+		
+		
+		
+		
+		try {
 			
 			primaryStage.setMinHeight(700);
 			primaryStage.setMinWidth(700);
 			
 			//main border pane
-			BorderPane borderpane = new BorderPane();
+			//BorderPane borderpane = new BorderPane();
 			
 			//pane with chess
 			GridPane chesspane = new GridPane();
@@ -84,15 +102,16 @@ public class Main extends Application{// implements EventHandler<ActionEvent>{
 	        
 	        
 
-            borderpane.setRight((new Button()));
+            //borderpane.setRight((new Button()));
 	        
             //put it together
-            borderpane.setCenter(chesspane);
-            borderpane.setTop(controls);
+            ((BorderPane) root).setCenter(chesspane);
+            //borderpane.setCenter(chesspane);
+            ((BorderPane) root).setTop(controls);
             
             
             
-            Scene scene = new Scene(borderpane, 400, 400);
+            Scene scene = new Scene(root, 700, 700);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	        primaryStage.setScene(scene);
 	        primaryStage.show();
@@ -127,13 +146,13 @@ public class Main extends Application{// implements EventHandler<ActionEvent>{
 			
 		} catch(Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	public static void main(String[] args) {
 		launch(args);
 	}
-/*
+
 	@Override
 	public void handle(ActionEvent event) {
 		if(event.getSource() == undoButton) {
@@ -156,7 +175,7 @@ public class Main extends Application{// implements EventHandler<ActionEvent>{
 	    						for (int y = 0; y < 8; y ++) {
 	    		            		if(this.game.board.getField(col,row).getFigure().canmove(this.game.board.getField(x,y), this.game.board))
 	    		            		{
-	    		            			this.game.board.getField(x,y).getStyleClass().add("buttHighlite");
+	    		            			this.game.board.getField(x,y).getStyleClass().add("test");
 	    		            		}
 	    		            	}
 	    					}
@@ -168,7 +187,7 @@ public class Main extends Application{// implements EventHandler<ActionEvent>{
 		}
 		
 	}
-	*/
+	
 	public void init() {
 		
 		game = new ChessGame();
@@ -176,5 +195,9 @@ public class Main extends Application{// implements EventHandler<ActionEvent>{
 		Figure figure = game.board.getField(0, 1).getFigure();
 		Field field = game.board.getField(0, 2);
 		game.move(figure, field);
+		figureMove = false;
+		whitesMove = true;
 	}
+
+
 }
