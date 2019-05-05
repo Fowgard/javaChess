@@ -9,6 +9,7 @@ import Figures.Knight;
 import Figures.Pawn;
 import Figures.Queen;
 import Figures.Rook;
+import javafx.scene.image.ImageView;
 
 public class ChessGame {
 	public Board board;
@@ -44,35 +45,38 @@ public class ChessGame {
 		Figure[][] figures = new Figure[8][8];
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-            	if(!this.board.getField(x,y).isEmpty())
-            	{
-            		switch(this.board.getField(x,y).getFigure().getType())
-            		{
-            			case 1:
-            				figures[x][y] = new Pawn(x,y,this.board.getField(x,y).getFigure().getColor());
-            				break;
-            			case 2:
-            				figures[x][y] = new Rook(x,y,this.board.getField(x,y).getFigure().getColor());
-            				break;
-            			case 3:
-            				figures[x][y] = new Knight(x,y,this.board.getField(x,y).getFigure().getColor());
-            				break;
-            			case 4:
-            				figures[x][y] = new Bishop(x,y,this.board.getField(x,y).getFigure().getColor());
-            				break;
-            			case 5:
-            				figures[x][y] = new Queen(x,y,this.board.getField(x,y).getFigure().getColor());
-            				break;
-            			case 6:
-            				figures[x][y] = new King(x,y,this.board.getField(x,y).getFigure().getColor());
-            				break;
-            		}
-            	}
+            	figures[x][y] = copyFigure(this.board.getField(x,y).getFigure());
             }
          }
-        
 		this.history.add(figures);
 		this.histIndex ++;
+	}
+	
+	public Figure copyFigure(Figure figure) {
+		Figure newFig = null;
+		if(figure !=null)
+			switch(figure.getType())
+			{
+				case 1:
+					newFig = new Pawn(figure.getCol(),figure.getRow(),figure.getColor());
+					break;
+				case 2:
+					newFig = new Rook(figure.getCol(),figure.getRow(),figure.getColor());
+					break;
+				case 3:
+					newFig = new Knight(figure.getCol(),figure.getRow(),figure.getColor());
+					break;
+				case 4:
+					newFig = new Bishop(figure.getCol(),figure.getRow(),figure.getColor());
+					break;
+				case 5:
+					newFig = new Queen(figure.getCol(),figure.getRow(),figure.getColor());
+					break;
+				case 6:
+					newFig = new King(figure.getCol(),figure.getRow(),figure.getColor());
+					break;
+			}
+		return newFig;
 	}
 	
 	public boolean move(Figure figure, Field field) {
@@ -123,9 +127,10 @@ public class ChessGame {
 		}
 		
 		
-		
+		changeHistory();
 		field.setFigure(figure);
 		this.board.field[figure.getCol()][figure.getRow()].removeFigure();
+		this.board.field[figure.getCol()][figure.getRow()].updateImg();
 		figure.updateRC(field);
 		
 		addHistory();
@@ -138,7 +143,8 @@ public class ChessGame {
 		Figure[][] figures = history.get(this.histIndex);
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-            	this.board.getField(x,y).setFigure(figures[x][y]);
+            	this.board.getField(x,y).setFigure(copyFigure(figures[x][y]));
+            	this.board.field[x][y].updateImg();
             }
          }
 	}
@@ -148,9 +154,24 @@ public class ChessGame {
 		Figure[][] figures = history.get(this.histIndex);
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-            	this.board.getField(x,y).setFigure(figures[x][y]);
+            	this.board.getField(x,y).setFigure(copyFigure(figures[x][y]));
+            	this.board.field[x][y].updateImg();
             }
          }		
 	}
+	
+	public void changeHistory() {
+		while(histIndex < history.size()-1){
+        	history.remove(histIndex+1);
+        }
+	}
+	
+	public int getHistIndex() {
+		return this.histIndex;
+	}
+	
+	public int getHistSize() {
+		return this.history.size();
+		}
 	
 }

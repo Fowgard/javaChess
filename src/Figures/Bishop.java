@@ -48,11 +48,13 @@ public class Bishop implements Figure{
 		else
 			dy = -1;
 	
-		while(this.col+dx != field.getCol() && this.row+dy != field.getRow())
+		while(x != field.getCol()-dx && y != field.getRow()-dy)
 		{
 			x += dx;
 			y += dy;
-			if(!board.getField(x, y).isEmpty())
+			if(x>= 8 || x<=-1 || y>=8 ||y<=-1)
+				return false;
+			if(!board.getField(x,y).isEmpty())
 				return false;
 		}
 		return true;

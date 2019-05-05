@@ -48,4 +48,11 @@ public class Field extends Button{
 		this.figure = null;
 		
 	}
+	
+	public void updateImg() {
+		 if (this.figure != null)
+			 this.setGraphic( new ImageView ( figure.getIcon() ) );
+	     else
+	         this.setGraphic( new ImageView() );
+	}
 }
