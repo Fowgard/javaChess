@@ -9,3 +9,9 @@
 	-fx-border-color:red;
 	-fx-border-width: 3 3 3 3;
 }
+
+.remove{
+	
+	-fx-border-color:transparent;
+	-fx-border-width: 3 3 3 3;
+}

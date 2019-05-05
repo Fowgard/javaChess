@@ -41,8 +41,9 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 	Button undoButton;
 	Button redoButton;
 	ChessGame game;
-	boolean figureMove;//choosing figure or moving figure
+	boolean figurePicked;//choosing figure or moving figure
 	boolean whitesMove;
+	Figure figureOnMove;
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		init();
@@ -155,6 +156,7 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 
 	@Override
 	public void handle(ActionEvent event) {
+		
 		if(event.getSource() == undoButton) {
 			System.out.println(this.game.board.getField(0, 1).isEmpty());
 			this.game.undo();
@@ -169,17 +171,60 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 			for (int row = 0; row < 8; row++) {
 	            for (int col = 0; col < 8; col ++) {
 	            	if(event.getSource() == this.game.board.getField(col,row)) {
-	    				if(!this.game.board.getField(col,row).isEmpty())
-	    				{
-	    					for (int x = 0; x < 8; x++) {
-	    						for (int y = 0; y < 8; y ++) {
-	    		            		if(this.game.board.getField(col,row).getFigure().canmove(this.game.board.getField(x,y), this.game.board))
-	    		            		{
-	    		            			this.game.board.getField(x,y).getStyleClass().add("test");
-	    		            		}
+	            		
+	            		if(figurePicked)//move figure
+	            		{
+	            			if(this.game.move(figureOnMove, this.game.board.getField(col,row)))
+	            			{
+	            				if(whitesMove)
+	            					whitesMove = false;
+	            				else
+	            					whitesMove = true;
+	            			}
+
+	    					this.figurePicked = false;
+	    					this.figureOnMove = null;
+	    					
+	    					
+	    					//remove highlights
+	    					for (int x = 0; x < 8; x++) 
+	    					{
+	    						for (int y = 0; y < 8; y ++) 
+	    						{
+	    		            	         		
+	    		            		
+	    							this.game.board.getField(x,y).getStyleClass().clear();
+	    							this.game.board.getField(x,y).getStyleClass().add("remove");
+	    							//this.game.board.getField(x,y).setStyle(null);
+	    		            		System.out.println("remove");
+	    							
 	    		            	}
 	    					}
-	    				}
+	    					return;
+	            		}
+	            		else//pick figure
+	            		{
+	            			if(!this.game.board.getField(col,row).isEmpty() && this.game.board.getField(col,row).getFigure().getColor() == whitesMove)
+		    				{
+		    					this.figurePicked = true;
+		    					this.figureOnMove = this.game.board.getField(col,row).getFigure();
+		    					
+		    					
+		    					
+		    					
+		    					for (int x = 0; x < 8; x++) {
+		    						for (int y = 0; y < 8; y ++) {
+		    		            		if(this.game.board.getField(col,row).getFigure().canmove(this.game.board.getField(x,y), this.game.board))
+		    		            		{
+		    		            			this.game.board.getField(x,y).getStyleClass().clear();
+		    		            			this.game.board.getField(x,y).getStyleClass().add("test");
+			    		            		System.out.println("test");
+		    		            		}
+		    		            	}
+		    					}
+		    				}
+	            		}
+	    				
 	    			}
 	            }
 			} 
@@ -195,7 +240,7 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 		Figure figure = game.board.getField(0, 1).getFigure();
 		Field field = game.board.getField(0, 2);
 		game.move(figure, field);
-		figureMove = false;
+		figurePicked = false;
 		whitesMove = true;
 	}
 
