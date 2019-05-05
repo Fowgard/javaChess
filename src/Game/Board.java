@@ -3,9 +3,6 @@ public class Board  {
 	public Field[][] field;
 	public Board()
 	{
-
-
-
 		field = new Field[8][8];
 		this.init();
 	}

@@ -1,12 +1,5 @@
-.buttHighlite{
-	-fx-background-radius: 6, 5;
-    -fx-background-insets: 0, 1;
-    -fx-effect: dropshadow( gaussian , rgba(0,0,0,255) , 10, 100 , 0 , 1 );
-     
-}
-
-.test{
+.highlight{
 	-fx-border-color:red;
-	-fx-border-width: 3 3 3 3;
+	-fx-border-width: 3;
 	-fx-alignment: center ;
 }

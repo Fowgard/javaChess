@@ -128,8 +128,8 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 				}
 	        	
 	        });
-		primaryStage.setHeight(700);
-		primaryStage.setWidth(700);
+		primaryStage.setHeight(750);
+		primaryStage.setWidth(750);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -149,7 +149,7 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 			{
 				for (int y = 0; y < 8; y ++) 
 				{
-					this.game.board.getField(x,y).getStyleClass().remove("test");					
+					this.game.board.getField(x,y).getStyleClass().remove("highlight");					
             	}
 			}
 			this.figurePicked = false;
@@ -162,7 +162,7 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 			{
 				for (int y = 0; y < 8; y ++) 
 				{
-					this.game.board.getField(x,y).getStyleClass().remove("test");					
+					this.game.board.getField(x,y).getStyleClass().remove("highlight");					
             	}
 			}
 			this.figurePicked = false;
@@ -188,7 +188,7 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 	    					{
 	    						for (int y = 0; y < 8; y ++) 
 	    						{
-	    							this.game.board.getField(x,y).getStyleClass().remove("test");					
+	    							this.game.board.getField(x,y).getStyleClass().remove("highlight");					
 	    		            	}
 	    					}
 	            		}
@@ -206,7 +206,7 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 		    						for (int y = 0; y < 8; y ++) {
 		    		            		if(this.game.board.getField(col,row).getFigure().canmove(this.game.board.getField(x,y), this.game.board))
 		    		            		{
-		    		            			this.game.board.getField(x,y).getStyleClass().add("test");
+		    		            			this.game.board.getField(x,y).getStyleClass().add("highlight");
 		    		            		}
 		    		            	}
 		    					}
