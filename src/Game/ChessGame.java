@@ -1,7 +1,10 @@
 package Game;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import Figures.Bishop;
 import Figures.King;
@@ -15,6 +18,12 @@ public class ChessGame {
 	public Board board;
 	private ArrayList<Figure[][]> history = new ArrayList<Figure[][]>();
 	private int histIndex;
+	private Board tmpBoard;
+	private boolean checkMate;
+	private boolean check;
+	private ArrayList<Field> escape = new ArrayList<Field>();
+	private ArrayList<Field> escapeKing = new ArrayList<Field>();
+	private Stack<String> fileTmp = new Stack<String>();
 	public ChessGame()
 	{
 		this.histIndex = -1;
@@ -79,7 +88,7 @@ public class ChessGame {
 		return newFig;
 	}
 	
-	public boolean move(Figure figure, Field field) {
+	public boolean move(Figure figure, Field field, boolean whitesMove) {
 		if(figure == null)
 			return false;
 		if(!figure.canmove(field,board))
@@ -91,7 +100,7 @@ public class ChessGame {
 			switch(figure.getType())
 			{
 				case 1:
-					writer.append("p");
+					//writer.append("p");
 					break;
 				case 2:
 					writer.append("V");
@@ -111,14 +120,10 @@ public class ChessGame {
 			}
 			writer.append((char)(97+figure.getCol()));
 			writer.append(Integer.toString(figure.getRow()+1));
-			writer.append(" ");
+			if(!field.isEmpty())
+				writer.append("x");
 			writer.append((char)(97+field.getCol()));
 			writer.append(Integer.toString(field.getRow()+1));
-			if(!field.isEmpty())
-			{
-				//TODO special znaky
-			}
-			writer.append("\n");
 			writer.close();
 		}
 		catch (Exception ex)
@@ -132,7 +137,35 @@ public class ChessGame {
 		this.board.field[figure.getCol()][figure.getRow()].removeFigure();
 		this.board.field[figure.getCol()][figure.getRow()].updateImg();
 		figure.updateRC(field);
-		
+		if(isCheck(whitesMove, this.board))
+		{
+			this.check = true;
+			System.out.println("3ach");
+			if(isCheckMate(whitesMove))
+			{
+				this.checkMate = true;
+				System.out.println("mat");
+			}
+			else
+				this.checkMate = false;
+		}
+		else 
+			this.check = false;
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
+			if(this.check)
+				if(this.checkMate)
+					writer.append("#");
+				else
+					writer.append("+");
+			if(!whitesMove)
+				writer.append("\n");
+			else
+				writer.append(" ");
+			writer.close();
+		}catch(Exception ex) {
+			System.out.println("fuck");
+		}
 		addHistory();
 		
 		return true;
@@ -146,7 +179,34 @@ public class ChessGame {
             	this.board.getField(x,y).setFigure(copyFigure(figures[x][y]));
             	this.board.field[x][y].updateImg();
             }
-         }
+        }
+        try {
+        	BufferedReader reader = new BufferedReader(new FileReader("text.txt"));
+        	String CurrentLine;
+        	String lastLine = "";
+        	StringBuffer sb=new StringBuffer("");
+        	String[] splited = new String[2];
+        	while ((CurrentLine = reader.readLine()) != null) 
+            {
+        		if(lastLine != "")
+        			sb.append(lastLine+"\n");
+                lastLine = CurrentLine;
+                splited = CurrentLine.split("\\s+");
+            }
+        	reader.close();
+        	BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", false));
+			writer.write(sb.toString());
+			if(splited.length == 2)
+			{
+				this.fileTmp.add(" "+splited[1]);
+				writer.append(splited[0]);
+			}
+			else
+				this.fileTmp.add("\n"+splited[0]);
+			writer.close();
+        }catch(Exception Ex){
+			System.out.println("fuck");
+        }
 	}
 	
 	public void redo(){
@@ -157,7 +217,14 @@ public class ChessGame {
             	this.board.getField(x,y).setFigure(copyFigure(figures[x][y]));
             	this.board.field[x][y].updateImg();
             }
-         }		
+        }
+        try {
+        	BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
+        	writer.append(fileTmp.pop());
+        	writer.close();
+        }catch(Exception Ex){
+        	
+        }
 	}
 	
 	public void changeHistory() {
@@ -174,4 +241,119 @@ public class ChessGame {
 		return this.history.size();
 		}
 	
+	public boolean isCheck(boolean whitesMove, Board board) {
+		Figure king = null;
+        for (int col = 0; col < 8; col++) {
+            for (int row = 0; row < 8; row++) {
+            	if(!board.getField(col,row).isEmpty())
+            	{
+    				if(board.getField(col,row).getFigure().getType()==6 && board.getField(col,row).getFigure().getColor() == !whitesMove)
+                		king = copyFigure(board.getField(col,row).getFigure());
+            	}
+
+            }
+         }
+        if(king == null)
+        	System.out.println("konec hry");
+        for (int col = 0; col < 8; col++) {
+            for (int row = 0; row < 8; row++) {
+            	if(!board.getField(col,row).isEmpty())
+            	{
+                	if(board.getField(col,row).getFigure().getColor() == whitesMove)
+                		if(king != null)
+                			if(board.getField(col,row).getFigure().canmove(board.getField(king.getCol(),king.getRow()), board))
+                			{
+                				return true;
+                			}
+            	}
+            }
+         }
+		return false;
+	}
+	
+	public boolean isCheckMate(boolean whitesMove) {
+		Boolean retval = true;
+        for (int col = 0; col < 8; col++) {
+            for (int row = 0; row < 8; row++) {
+            	if(!board.getField(col,row).isEmpty())
+            	{
+                	if(this.board.getField(col,row).getFigure().getColor() == !whitesMove)
+                	{
+                        for (int x = 0; x < 8; x++) {
+                            for (int y = 0; y < 8; y++) {
+                            	if(this.board.getField(col,row).getFigure().canmove(this.board.getField(x,y), this.board))
+                            	{	
+                            		makeTmpBoard(this.board.getField(col,row),this.board.getField(x,y));
+                            		if(!isCheck(whitesMove,this.tmpBoard))
+                            		{
+                            			if(this.board.getField(col,row).getFigure().getType() == 6)
+                            				this.escapeKing.add(new Field(this.board.getField(x,y).getCol(),this.board.getField(x,y).getRow()));
+                            			else	
+                            				this.escape.add(new Field(this.board.getField(x,y).getCol(),this.board.getField(x,y).getRow()));
+                            			retval = false;
+                            		}
+                            	}
+                            }
+                         }
+                	}
+            	}
+            }
+         }
+		return retval;
+	}
+	
+	public boolean selfCheckMate(Figure figure, Field field,boolean whitesMove)
+	{
+		makeTmpBoard(this.board.getField(figure.getCol(),figure.getRow()),field);
+		if(isCheck(!whitesMove,this.tmpBoard))
+			return true;
+				
+		return false;
+	}
+	
+	public void makeTmpBoard(Field from, Field to) {
+		this.tmpBoard = new Board();
+        for (int col = 0; col < 8; col++) {
+            for (int row = 0; row < 8; row++) {
+            	this.tmpBoard.getField(col,row).setFigure(copyFigure(this.board.getField(col, row).getFigure()));
+            }
+         }
+        this.tmpBoard.getField(to.getCol(),to.getRow()).setFigure(copyFigure(from.getFigure()));
+        this.tmpBoard.getField(to.getCol(),to.getRow()).getFigure().updateRC(to);
+        this.tmpBoard.getField(from.getCol(),from.getRow()).removeFigure();
+	}
+	
+	public boolean getCheck(){
+		return this.check;
+	}
+	
+	public boolean getCheckMate(){
+		return this.checkMate;
+	}
+	
+	public void setCheck(boolean check){
+		this.check = check;
+	}
+	
+	public void setCheckMate(boolean checkMate){
+		this.checkMate = checkMate;
+	}
+	
+	public boolean isEscape(Field field) {
+		for(int i = 0; i <this.escape.size(); i++)
+		{
+			if(field.getCol() == this.escape.get(i).getCol() &&field.getRow() == this.escape.get(i).getRow())
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isKingEscape(Field field) {
+		for(int i = 0; i <this.escapeKing.size(); i++)
+		{
+			if(field.getCol() == this.escapeKing.get(i).getCol() &&field.getRow() == this.escapeKing.get(i).getRow())
+				return true;
+		}
+		return false;
+	}
 }
