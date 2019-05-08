@@ -1,12 +1,19 @@
 package application;
 
+import java.io.File;
+
 import Game.ChessGame;
 import Game.Figure;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class ChessHandler  implements EventHandler<ActionEvent>{
 
@@ -14,17 +21,51 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 	boolean whitesMove;
 	Figure figureOnMove;
 	ChessGame game;
-	
+	final FileChooser fileChooser = new FileChooser();
+	moveParser moveParser;
 	
 	@FXML
-	private BorderPane Game;
-	@FXML
-	private Button Undo;
-	@FXML
-	private Button Redo;
-	
+    private BorderPane Game;
 
-	
+	@FXML
+	private Stage stage;
+    @FXML
+    private Button ChooseGameFile;
+
+    @FXML
+    private TableView<?> MoveTable;
+
+    @FXML
+    private Button SaveGameFile;
+
+    @FXML
+    private Button Undo;
+
+    @FXML
+    private Button Reset;
+
+    @FXML
+    private Button Redo;
+
+    @FXML
+    private Button AutoBackwards;
+
+    @FXML
+    private Button Stop;
+
+    @FXML
+    private Button AutoForwards;
+
+    @FXML
+    private Slider SpeedSlider;
+
+    @FXML
+    private AnchorPane newTab;
+    
+    
+    
+    
+    
 	public ChessHandler()
 	{
 		this.game = game;
@@ -135,7 +176,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 			this.figureOnMove = null;
 		}
 	}
-	
+	@FXML
 	public void redo()
 	{
 		if(this.game.getHistIndex() < this.game.getHistSize()-1) {
@@ -155,7 +196,44 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 	
 	}
 	
-	
+
+    @FXML
+    void autoBackwards(ActionEvent event) {
+
+    }
+
+    @FXML
+    void autoForwards(ActionEvent event) {
+
+    }
+
+    @FXML
+    void chooseFile(ActionEvent event) {
+    	File file = this.fileChooser.showOpenDialog(stage);
+    	
+    	moveParser= new moveParser(file);
+    }
+
+    @FXML
+    void reset(ActionEvent event) {
+    	while (game.getHistIndex() > 0)
+    		game.undo();
+    }
+
+    @FXML
+    void saveGame(ActionEvent event) {
+
+    }
+
+    @FXML
+    void stop(ActionEvent event) {
+
+    }
+
+    @FXML
+    void makeNewTab(ActionEvent event) {
+    	
+    }
 	
 
 }

@@ -21,15 +21,21 @@ public class View extends Application {
 	
 	public View()
 	{
-		this.handler = new ChessHandler();
-		this.game = handler.getGame();
+		
 	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		FXMLLoader loader = new FXMLLoader(View.class.getResource("tabWindow.fxml"));
+		TabPane root = loader.load();
+		
+		loader = new FXMLLoader(View.class.getResource("Chess.fxml"));
+		BorderPane Game = loader.load();
 		
 		
-		Parent Game = FXMLLoader.load(getClass().getResource("Chess.fxml"));
+		this.handler = loader.getController();
+		this.game = handler.getGame();
+		
 		TabPane window = new TabPane();
 		Tab Game1 = new Tab("Game1");
 		
@@ -66,10 +72,10 @@ public class View extends Application {
             ((BorderPane)Game).setCenter(chesspane);
             ((BorderPane)Game).setMinSize(600, 600);
 	        Game1.setContent(Game);
-	        window.getTabs().addAll(Game1);
+	        root.getTabs().addAll(Game1);
 
 
-            Scene scene = new Scene(window, 700, 700);
+            Scene scene = new Scene(root, 700, 700);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             
         	primaryStage.setHeight(1200);
