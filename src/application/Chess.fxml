@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane fx:id="Game" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Main">
+<BorderPane fx:id="Game" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ChessHandler">
    <right>
       <FlowPane maxWidth="200.0" prefHeight="567.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -44,7 +44,7 @@
          <children>
             <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="105.0">
                <children>
-                  <Button fx:id="Undo" layoutX="13.0" layoutY="35.0" mnemonicParsing="false" onAction="#printhi" prefHeight="30.0" prefWidth="80.0" text="Undo" />
+                  <Button fx:id="Undo" layoutX="13.0" layoutY="35.0" mnemonicParsing="false" onAction="#undo" prefHeight="30.0" prefWidth="80.0" text="Undo" />
                </children>
             </Pane>
             <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="62.0">
