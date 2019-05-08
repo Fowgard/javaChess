@@ -43,3 +43,12 @@ c2c4
 
 c2c4
 
+d2d4 e7e5
+g2g4 h7h5
+
+d2d4 f7f5
+e2e4 f7f5
+d2d4 f7f5
+f2f4 g7g5
+
+a2a4

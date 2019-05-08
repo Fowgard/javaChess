@@ -263,11 +263,12 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     @FXML
     void addNewTab(Event event) throws IOException{
     	
+    	
     	FXMLLoader loader = new FXMLLoader(View.class.getResource("Chess.fxml"));
 		BorderPane Game = loader.load();
 		ChessHandler chessHandler = loader.<ChessHandler>getController();
-		chessHandler.mainGame = this.mainGame;
-		
+		//chessHandler.mainGame = this.mainGame;
+		chessHandler.mainGame = new MainGame();
         
 		
 		Tab tab = new Tab("Game");
@@ -287,9 +288,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
                 } else {
                     color = "#008040";
                 }
-                this.mainGame.game.board.getField(col,row).setStyle("-fx-background-color: "+color+";");
-                chesspane.add(this.mainGame.game.board.getField(col,Math.abs(row-7)), col, row);
-                this.mainGame.game.board.getField(col,row).setOnAction(this);
+                chessHandler.mainGame.game.board.getField(col,row).setStyle("-fx-background-color: "+color+";");
+                chesspane.add(chessHandler.mainGame.game.board.getField(col,Math.abs(row-7)), col, row);
+                chessHandler.mainGame.game.board.getField(col,row).setOnAction(chessHandler);
             }
         }
         
