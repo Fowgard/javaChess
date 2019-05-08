@@ -99,9 +99,11 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 	        //TODO okraje
 	        
 
-	        chesspane.setPrefSize(750, 750);
+	        chesspane.setPrefSize(600, 600);
+	        chesspane.setMinSize(500, 500);
             //put it together
             ((BorderPane)Game).setCenter(chesspane);
+            ((BorderPane)Game).setMinSize(600, 600);
 	        Game1.setContent(Game);
 	        window.getTabs().addAll(Game1);
 
@@ -142,8 +144,8 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 				}
 	        	
 	        });
-	    chesspane.setMinHeight(750);
-	    chesspane.setMinWidth(750);
+	    //chesspane.setMinHeight(750);
+	    //chesspane.setMinWidth(750);
 		primaryStage.setHeight(1200);
 		primaryStage.setWidth(1200);
 		} catch(Exception e) {

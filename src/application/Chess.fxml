@@ -18,8 +18,8 @@
                   <Button fx:id="ChooseGameFile" layoutX="20.0" layoutY="33.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="157.0" text="Choose game file" />
                </children>
             </Pane>
-            <Pane prefHeight="227.0" prefWidth="23.0" />
-            <Pane prefHeight="238.0" prefWidth="158.0">
+            <Pane maxWidth="20.0" prefHeight="227.0" prefWidth="23.0" />
+            <Pane maxWidth="200.0" prefHeight="238.0" prefWidth="158.0">
                <children>
                   <TableView fx:id="MoveTable" layoutX="-1.0" prefHeight="235.0" prefWidth="157.0">
                     <columns>
@@ -30,8 +30,8 @@
                   </TableView>
                </children>
             </Pane>
-            <Pane prefHeight="200.0" prefWidth="15.0" />
-            <Pane prefHeight="61.0" prefWidth="200.0">
+            <Pane maxWidth="20.0" prefHeight="200.0" prefWidth="15.0" />
+            <Pane maxWidth="200.0" prefHeight="61.0" prefWidth="200.0">
                <children>
                   <Button fx:id="SaveGameFile" layoutX="22.0" layoutY="18.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="157.0" text="Save game file" />
                </children>
@@ -42,37 +42,37 @@
    <top>
       <HBox maxHeight="100.0" prefHeight="100.0" prefWidth="494.0" BorderPane.alignment="CENTER">
          <children>
-            <Pane prefHeight="100.0" prefWidth="105.0">
+            <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="105.0">
                <children>
                   <Button fx:id="Undo" layoutX="13.0" layoutY="35.0" mnemonicParsing="false" onAction="#printhi" prefHeight="30.0" prefWidth="80.0" text="Undo" />
                </children>
             </Pane>
-            <Pane prefHeight="100.0" prefWidth="62.0">
+            <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="62.0">
                <children>
                   <Button fx:id="Reset" layoutX="9.0" layoutY="35.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="45.0" text="Reset" />
                </children>
             </Pane>
-            <Pane prefHeight="100.0" prefWidth="106.0">
+            <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="106.0">
                <children>
                   <Button fx:id="Redo" layoutX="13.0" layoutY="35.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Redo" />
                </children>
             </Pane>
-            <Pane prefHeight="100.0" prefWidth="120.0">
+            <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="120.0">
                <children>
                   <Button fx:id="AutoBackwards" layoutX="10.0" layoutY="35.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Auto Backwards" />
                </children>
             </Pane>
-            <Pane prefHeight="100.0" prefWidth="60.0">
+            <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="60.0">
                <children>
                   <Button fx:id="Stop" layoutX="5.0" layoutY="35.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="50.0" text="Stop" />
                </children>
             </Pane>
-            <Pane prefHeight="100.0" prefWidth="120.0">
+            <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="120.0">
                <children>
                   <Button fx:id="AutoForwards" layoutX="10.0" layoutY="35.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Auto Forwards" />
                </children>
             </Pane>
-            <Pane prefHeight="100.0" prefWidth="175.0">
+            <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="175.0">
                <children>
                   <Slider fx:id="SpeedSlider" blockIncrement="1.0" layoutX="19.0" layoutY="43.0" max="5.0" min="1.0" />
                </children>
