@@ -258,18 +258,16 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 		//chessHandler.mainGame = this.mainGame;
 		chessHandler.mainGame = new MainGame();
         
-		
 		Tab tab = new Tab("Game");
 		tab.setClosable(true);
 		tab.setContent(Game);
 		
 		//pane with chess
 		GridPane chesspane = new GridPane();
-		chesspane.setPadding(new Insets(10,20,20,20));
+		//chesspane.setPadding(new Insets(10,20,20,20));
 		
-        int size = 8 ;
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col ++) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col ++) {
                 String color ;
                 if ((row + col) % 2 == 0) {
                     color = "white";
@@ -284,7 +282,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         
         
         chesspane.setPrefSize(600, 600);
-        chesspane.setMinSize(300, 300);
+        chesspane.setMinSize(600, 600);
         //put it together
         ((BorderPane)Game).setCenter(chesspane);
         ((BorderPane)Game).setMinSize(600, 600);
@@ -301,9 +299,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 			@Override
 			public void changed(ObservableValue arg0, Object arg1, Object arg2) {
 				double height = (double) arg2;
-				for (int row = 0; row < size; row++) {
-		            for (int col = 0; col < size; col ++) {
-		            	chessHandler.mainGame.game.board.getField(col,Math.abs(row-7)).setPrefHeight(height/8);
+				for (int row = 0; row < 8; row++) {
+		            for (int col = 0; col < 8; col ++) {
+		            	chessHandler.mainGame.game.board.getField(col,Math.abs(row-7)).setMinHeight(height/8);
 		            }
 				}
 			}
@@ -315,8 +313,8 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 			@Override
 			public void changed(ObservableValue arg0, Object arg1, Object arg2) {
 				double width = (double) arg2;
-				for (int row = 0; row < size; row++) {
-		            for (int col = 0; col < size; col ++) {
+				for (int row = 0; row < 8; row++) {
+		            for (int col = 0; col < 8; col ++) {
 		            	chessHandler.mainGame.game.board.getField(col,Math.abs(row-7)).setPrefWidth(width/8);
 		            }
 				}
