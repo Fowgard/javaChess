@@ -1,26 +1,38 @@
 package application;
 
 import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import Game.ChessGame;
 import Game.Figure;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class ChessHandler  implements EventHandler<ActionEvent>{
 
-	boolean figurePicked;//choosing figure or moving figure
-	boolean whitesMove;
-	Figure figureOnMove;
-	ChessGame game;
+	MainGame mainGame;
+
 	final FileChooser fileChooser = new FileChooser();
 	moveParser moveParser;
 	
@@ -60,138 +72,126 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     private Slider SpeedSlider;
 
     @FXML
-    private AnchorPane newTab;
+    private Tab newTab;
     
-    
+    @FXML
+    private TabPane tabPane;
+
     
     
     
 	public ChessHandler()
 	{
-		this.game = game;
-		figurePicked = false;
-		whitesMove = true;
-		this.init();
+		this.mainGame = new MainGame();
+
 	}
 	
-	public ChessGame getGame() {
-		return this.game;
+	public MainGame getGame() {
+		return this.mainGame;
 	}
-	
-	public void init() {
-		game = new ChessGame();
-		this.game.addHistory();
-		//handler = new ChessHandler(game);
-		
-	}
-	
+
 	
 	@Override
 	public void handle(ActionEvent event) {		
-			//System.out.println(this.game.getCheck());
-			//System.out.println(this.game.getCheckMate());
-			//System.out.println();
-			for (int row = 0; row < 8; row++) {
-	            for (int col = 0; col < 8; col ++) {
-	            	if(event.getSource() == this.game.board.getField(col,row)) {
-	            		
-	            		if(figurePicked)//move figure
-	            		{
-	            			if(this.game.move(figureOnMove, this.game.board.getField(col,row), this.whitesMove) && this.game.board.getField(col,row).getStyleClass().contains("highlight"))
-	            				whitesMove = !whitesMove;
-	            			
-	            			
-	    					this.figurePicked = false;
-	    					this.figureOnMove = null;
+		for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col ++) {
+            	if(event.getSource() == this.mainGame.game.board.getField(col,row)) {
+            		
+            		if(this.mainGame.figurePicked)//move figure
+            		{
+            			if(this.mainGame.game.move(this.mainGame.figureOnMove, this.mainGame.game.board.getField(col,row), this.mainGame.whitesMove) && this.mainGame.game.board.getField(col,row).getStyleClass().contains("highlight"))
+            				this.mainGame.whitesMove = !this.mainGame.whitesMove;
+            			
+            			
+    					this.mainGame.figurePicked = false;
+    					this.mainGame.figureOnMove = null;
+    					
+    					
+    					//remove highlights
+    					for (int x = 0; x < 8; x++) 
+    					{
+    						for (int y = 0; y < 8; y ++) 
+    						{
+    							this.mainGame.game.board.getField(x,y).getStyleClass().remove("highlight");					
+    		            	}
+    					}
+            		}
+            		else//pick figure
+            		{
+            			if(!this.mainGame.game.board.getField(col,row).isEmpty() && this.mainGame.game.board.getField(col,row).getFigure().getColor() == this.mainGame.whitesMove)
+	    				{
+	    					this.mainGame.figurePicked = true;
+	    					this.mainGame.figureOnMove = this.mainGame.game.board.getField(col,row).getFigure();
 	    					
 	    					
-	    					//remove highlights
-	    					for (int x = 0; x < 8; x++) 
-	    					{
-	    						for (int y = 0; y < 8; y ++) 
-	    						{
-	    							this.game.board.getField(x,y).getStyleClass().remove("highlight");					
-	    		            	}
-	    					}
-	            		}
-	            		else//pick figure
-	            		{
-	            			if(!this.game.board.getField(col,row).isEmpty() && this.game.board.getField(col,row).getFigure().getColor() == whitesMove)
-		    				{
-		    					this.figurePicked = true;
-		    					this.figureOnMove = this.game.board.getField(col,row).getFigure();
-		    					
-		    					
-		    					
-		    					
-		    					for (int x = 0; x < 8; x++) {
-		    						for (int y = 0; y < 8; y ++) {
-		    		            		if(this.game.board.getField(col,row).getFigure().canmove(this.game.board.getField(x,y), this.game.board))
-		    		            		{
-		    		            			//if(this.game.isCheckMate(!this.whitesMove))
-		    		            				
-		    		            			if(this.game.selfCheckMate(this.game.board.getField(col,row).getFigure(),this.game.board.getField(x,y),this.whitesMove))
-		    		            			{
-		    		            				//self checkmate
+	    					
+	    					
+	    					for (int x = 0; x < 8; x++) {
+	    						for (int y = 0; y < 8; y ++) {
+	    		            		if(this.mainGame.game.board.getField(col,row).getFigure().canmove(this.mainGame.game.board.getField(x,y), this.mainGame.game.board))
+	    		            		{
+	    		            			if(this.mainGame.game.selfCheckMate(this.mainGame.game.board.getField(col,row).getFigure(),this.mainGame.game.board.getField(x,y),this.mainGame.whitesMove))
+	    		            			{
+	    		            				//self checkmate
+	    		            			}
+	    		            			else
+	    		            			{
+	    		            				if(this.mainGame.game.getCheck()) {
+		    		            				if(this.mainGame.game.board.getField(col,row).getFigure().getType() == 6)
+		    		            				{
+		    		            					if(this.mainGame.game.isKingEscape(this.mainGame.game.board.getField(x,y)))
+		    		            						this.mainGame.game.board.getField(x,y).getStyleClass().add("highlight");
+		    		            				}
+		    		            				else
+		    		            					if(this.mainGame.game.isEscape(this.mainGame.game.board.getField(x,y)))
+		    		            						this.mainGame.game.board.getField(x,y).getStyleClass().add("highlight");
 		    		            			}
 		    		            			else
-		    		            			{
-		    		            				if(this.game.getCheck()) {
-			    		            				if(this.game.board.getField(col,row).getFigure().getType() == 6)
-			    		            				{
-			    		            					if(this.game.isKingEscape(this.game.board.getField(x,y)))
-			    		            						this.game.board.getField(x,y).getStyleClass().add("highlight");
-			    		            				}
-			    		            				else
-			    		            					if(this.game.isEscape(this.game.board.getField(x,y)))
-			    		            						this.game.board.getField(x,y).getStyleClass().add("highlight");
-			    		            			}
-			    		            			else
-			    		            				this.game.board.getField(x,y).getStyleClass().add("highlight");
-		    		            			}
-		    		            		}
-		    		            	}
-		    					}
-		    				}
-	            		}
-	    				
-	    			}
-	            }
-			} 
-		}
+		    		            				this.mainGame.game.board.getField(x,y).getStyleClass().add("highlight");
+	    		            			}
+	    		            		}
+	    		            	}
+	    					}
+	    				}
+            		}
+    				
+    			}
+            }
+		} 
+	}
 	@FXML
 	public void undo() {
-		if(this.game.getHistIndex() > 0) {
-			this.whitesMove = !whitesMove;
-			this.game.undo();
-			this.game.setCheck(this.game.isCheck(this.whitesMove,this.game.board));
+		if(this.mainGame.game.getHistIndex() > 0) {
+			this.mainGame.whitesMove = !this.mainGame.whitesMove;
+			this.mainGame.game.undo();
+			this.mainGame.game.setCheck(this.mainGame.game.isCheck(this.mainGame.whitesMove,this.mainGame.game.board));
 			for (int x = 0; x < 8; x++) 
 			{
 				for (int y = 0; y < 8; y ++) 
 				{
-					this.game.board.getField(x,y).getStyleClass().remove("highlight");					
+					this.mainGame.game.board.getField(x,y).getStyleClass().remove("highlight");					
             	}
 			}
-			this.figurePicked = false;
-			this.figureOnMove = null;
+			this.mainGame.figurePicked = false;
+			this.mainGame.figureOnMove = null;
 		}
 	}
 	@FXML
 	public void redo()
 	{
-		if(this.game.getHistIndex() < this.game.getHistSize()-1) {
-			this.whitesMove = !whitesMove;
-			this.game.redo();
-			this.game.setCheck(this.game.isCheck(this.whitesMove,this.game.board));
+		if(this.mainGame.game.getHistIndex() < this.mainGame.game.getHistSize()-1) {
+			this.mainGame.whitesMove = !this.mainGame.whitesMove;
+			this.mainGame.game.redo();
+			this.mainGame.game.setCheck(this.mainGame.game.isCheck(this.mainGame.whitesMove,this.mainGame.game.board));
 			for (int x = 0; x < 8; x++) 
 			{
 				for (int y = 0; y < 8; y ++) 
 				{
-					this.game.board.getField(x,y).getStyleClass().remove("highlight");					
+					this.mainGame.game.board.getField(x,y).getStyleClass().remove("highlight");					
 	        	}
 			}
-			this.figurePicked = false;
-			this.figureOnMove = null;
+			this.mainGame.figurePicked = false;
+			this.mainGame.figureOnMove = null;
 		}
 	
 	}
@@ -203,8 +203,38 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     }
 
     @FXML
-    void autoForwards(ActionEvent event) {
+    void autoForwards(ActionEvent event) throws InterruptedException {
+    	/*while(this.mainGame.game.getHistIndex() < this.mainGame.game.getHistSize()-1)
+    	{
+    		Thread.sleep(1000);
+    		System.out.println("hi");
+    		this.redo();
+    		
+    	}
+    	Timer timer = new Timer();
+    	TimerTask task = new TimerTask()
+    	{
+    	        public void run()
+    	        {
+    	        	System.out.println("hi");
+    	        	redo();      
+    	        }
 
+    	};
+    	timer.schedule(task, 1000l);
+    	
+    	
+    	Timeline time = new Timeline();
+    	time.setCycleCount((Timeline.INDEFINITE);
+    	if(time != null) {
+    		time.stop();
+    	}
+    	KeyFrame frame = new KeyFrame(Duration.(1,new EventHandler<ActionEvent>() {
+    		@override
+    		public void handle(ActionEvent event) {
+    			seconds--;
+    		}
+    	}));*/
     }
 
     @FXML
@@ -216,8 +246,8 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 
     @FXML
     void reset(ActionEvent event) {
-    	while (game.getHistIndex() > 0)
-    		game.undo();
+    	while (this.mainGame.game.getHistIndex() > 0)
+    		this.undo();
     }
 
     @FXML
@@ -229,11 +259,84 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     void stop(ActionEvent event) {
 
     }
-
+    
     @FXML
-    void makeNewTab(ActionEvent event) {
+    void addNewTab(Event event) throws IOException{
     	
+    	FXMLLoader loader = new FXMLLoader(View.class.getResource("Chess.fxml"));
+		BorderPane Game = loader.load();
+		ChessHandler chessHandler = loader.<ChessHandler>getController();
+		chessHandler.mainGame = this.mainGame;
+		
+        
+		
+		Tab tab = new Tab("Game");
+		tab.setClosable(true);
+		tab.setContent(Game);
+		
+		//pane with chess
+		GridPane chesspane = new GridPane();
+		chesspane.setPadding(new Insets(10,20,20,20));
+		
+        int size = 8 ;
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col ++) {
+                String color ;
+                if ((row + col) % 2 == 0) {
+                    color = "white";
+                } else {
+                    color = "#008040";
+                }
+                this.mainGame.game.board.getField(col,row).setStyle("-fx-background-color: "+color+";");
+                chesspane.add(this.mainGame.game.board.getField(col,Math.abs(row-7)), col, row);
+                this.mainGame.game.board.getField(col,row).setOnAction(this);
+            }
+        }
+        
+        
+        chesspane.setPrefSize(600, 600);
+        chesspane.setMinSize(500, 500);
+        //put it together
+        ((BorderPane)Game).setCenter(chesspane);
+        ((BorderPane)Game).setMinSize(600, 600);
+        tab.setContent(Game);
+        
+        
+        tabPane.getTabs().add( tabPane.getTabs().size()-1,tab);
+        tabPane.getSelectionModel().clearAndSelect(tabPane.getTabs().size()-2);
+        
+
+        
+        chesspane.heightProperty().addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+				double height = (double) arg2;
+				for (int row = 0; row < size; row++) {
+		            for (int col = 0; col < size; col ++) {
+		            	mainGame.game.board.getField(col,Math.abs(row-7)).setPrefHeight(height/8);
+		            }
+				}
+			}
+        	
+        });
+        
+        chesspane.widthProperty().addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+				double width = (double) arg2;
+				for (int row = 0; row < size; row++) {
+		            for (int col = 0; col < size; col ++) {
+		            	mainGame.game.board.getField(col,Math.abs(row-7)).setPrefWidth(width/8);
+		            }
+				}
+			}
+        	
+        });
+        
+       
     }
-	
+	 
 
 }

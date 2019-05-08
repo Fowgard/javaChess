@@ -74,7 +74,7 @@
             </Pane>
             <Pane maxHeight="100.0" prefHeight="100.0" prefWidth="175.0">
                <children>
-                  <Slider fx:id="SpeedSlider" blockIncrement="1.0" layoutX="19.0" layoutY="43.0" max="5.0" min="1.0" />
+                  <Slider fx:id="SpeedSlider" blockIncrement="1.0" layoutX="18.0" layoutY="43.0" majorTickUnit="5.0" max="5.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" value="1.0" />
                </children>
             </Pane>
          </children>
