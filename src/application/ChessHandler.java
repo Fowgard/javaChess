@@ -2,9 +2,6 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import Game.ChessGame;
 import Game.Figure;
@@ -28,10 +25,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class ChessHandler  implements EventHandler<ActionEvent>{
 
 	MainGame mainGame;
+	Timeline timeLine;
 
 	final FileChooser fileChooser = new FileChooser();
 	moveParser moveParser;
@@ -199,42 +198,30 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 
     @FXML
     void autoBackwards(ActionEvent event) {
+    	timeLine = new Timeline(new KeyFrame(Duration.seconds(Math.round(SpeedSlider.getValue())), new EventHandler<ActionEvent>() {
+
+    	    @Override
+    	    public void handle(ActionEvent event) {
+    	    	System.out.println("hi");
+    	        undo();
+    	    }
+    	}));
+    	timeLine.setCycleCount(mainGame.game.getHistIndex());
+    	timeLine.play();
 
     }
 
     @FXML
     void autoForwards(ActionEvent event) throws InterruptedException {
-    	/*while(this.mainGame.game.getHistIndex() < this.mainGame.game.getHistSize()-1)
-    	{
-    		Thread.sleep(1000);
-    		System.out.println("hi");
-    		this.redo();
-    		
-    	}
-    	Timer timer = new Timer();
-    	TimerTask task = new TimerTask()
-    	{
-    	        public void run()
-    	        {
-    	        	System.out.println("hi");
-    	        	redo();      
-    	        }
+    	timeLine = new Timeline(new KeyFrame(Duration.seconds(Math.round(SpeedSlider.getValue())), new EventHandler<ActionEvent>() {
 
-    	};
-    	timer.schedule(task, 1000l);
-    	
-    	
-    	Timeline time = new Timeline();
-    	time.setCycleCount((Timeline.INDEFINITE);
-    	if(time != null) {
-    		time.stop();
-    	}
-    	KeyFrame frame = new KeyFrame(Duration.(1,new EventHandler<ActionEvent>() {
-    		@override
-    		public void handle(ActionEvent event) {
-    			seconds--;
-    		}
-    	}));*/
+    	    @Override
+    	    public void handle(ActionEvent event) {
+    	        redo();
+    	    }
+    	}));
+    	timeLine.setCycleCount(mainGame.game.getHistSize()-mainGame.game.getHistIndex()-1);
+    	timeLine.play();
     }
 
     @FXML
@@ -257,7 +244,8 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 
     @FXML
     void stop(ActionEvent event) {
-
+	  	if(timeLine != null)
+	  		timeLine.stop();
     }
     
     @FXML
@@ -296,7 +284,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         
         
         chesspane.setPrefSize(600, 600);
-        chesspane.setMinSize(500, 500);
+        chesspane.setMinSize(300, 300);
         //put it together
         ((BorderPane)Game).setCenter(chesspane);
         ((BorderPane)Game).setMinSize(600, 600);
@@ -315,7 +303,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 				double height = (double) arg2;
 				for (int row = 0; row < size; row++) {
 		            for (int col = 0; col < size; col ++) {
-		            	mainGame.game.board.getField(col,Math.abs(row-7)).setPrefHeight(height/8);
+		            	chessHandler.mainGame.game.board.getField(col,Math.abs(row-7)).setPrefHeight(height/8);
 		            }
 				}
 			}
@@ -329,7 +317,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 				double width = (double) arg2;
 				for (int row = 0; row < size; row++) {
 		            for (int col = 0; col < size; col ++) {
-		            	mainGame.game.board.getField(col,Math.abs(row-7)).setPrefWidth(width/8);
+		            	chessHandler.mainGame.game.board.getField(col,Math.abs(row-7)).setPrefWidth(width/8);
 		            }
 				}
 			}
