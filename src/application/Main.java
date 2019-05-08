@@ -37,9 +37,6 @@ import javafx.geometry.VPos;
 import javafx.scene.layout.Priority;
 
 
-
-
-
 public class Main extends Application  implements EventHandler<ActionEvent>{
 	//Button undoButton;
 	//Button redoButton;
@@ -48,19 +45,18 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 	boolean whitesMove;
 	Figure figureOnMove;
 	@FXML
-	private Tab Tab1 = new Tab();
+	private BorderPane Game;
 	@FXML
-	private BorderPane Game = new BorderPane();
-	@FXML
-	private Button Undo = new Button();
+	private Button Undo;
 	@FXML
 	private Button Redo = new Button();
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		init();
 
-		Parent root = FXMLLoader.load(getClass().getResource("Chess.fxml"));
-
+		Parent Game = FXMLLoader.load(getClass().getResource("Chess.fxml"));
+		TabPane window = new TabPane();
+		Tab Game1 = new Tab("Game1");
 
 		try {
 			
@@ -83,7 +79,7 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 			
 			//controls.getChildren().addAll(undoButton, redoButton);
 			
-			Undo.setOnAction(this);
+			//Undo.setOnAction(this);
 			
 	        int size = 8 ;
 	        for (int row = 0; row < size; row++) {
@@ -101,17 +97,19 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 	        }
 
 	        //TODO okraje
+	        
 
+	        chesspane.setPrefSize(750, 750);
             //put it together
-            Game.setCenter(chesspane);
-	        Tab1.setContent(Game);
-	        ((TabPane)root).getTabs().addAll(Tab1);
+            ((BorderPane)Game).setCenter(chesspane);
+	        Game1.setContent(Game);
+	        window.getTabs().addAll(Game1);
 
 
             
             
             
-            Scene scene = new Scene(root, 700, 700);
+            Scene scene = new Scene(window, 700, 700);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             
 	        primaryStage.setScene(scene);
@@ -144,8 +142,10 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 				}
 	        	
 	        });
-		primaryStage.setHeight(750);
-		primaryStage.setWidth(750);
+	    chesspane.setMinHeight(750);
+	    chesspane.setMinWidth(750);
+		primaryStage.setHeight(1200);
+		primaryStage.setWidth(1200);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -153,6 +153,11 @@ public class Main extends Application  implements EventHandler<ActionEvent>{
 	
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	@FXML
+	public void printhi() {
+		System.out.println("hi");
 	}
 
 	@Override
