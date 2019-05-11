@@ -20,7 +20,7 @@ public class MainGame {
 	/**
 	 * constructor
 	 * @param gameCounter id of the game, every game in every tab has its own id
-	 * @throws Exception
+	 * @throws Exception if file can not be read
 	 */
 	public MainGame(int gameCounter) throws Exception {
 		this.game = game;
@@ -31,7 +31,7 @@ public class MainGame {
 	}
 	/**
 	 * Initializes variables
-	 * @throws Exception
+	 * @throws Exception if file can not be read
 	 */
 	public void init() throws Exception {
 		game = new ChessGame();

@@ -18,7 +18,7 @@ public class Pawn implements Figure{
 	 * @param col column of current position 
 	 * @param row row of current position
 	 * @param isWhite color
-	 * @return void
+	 * 
 	 */
 	public Pawn(int col, int row, boolean isWhite)
 	{

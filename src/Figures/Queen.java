@@ -18,7 +18,7 @@ public class Queen implements Figure{
 	 * @param col column of current position 
 	 * @param row row of current position
 	 * @param isWhite color
-	 * @return void
+	 * 
 	 */
 	public Queen(int col, int row, boolean isWhite)
 	{
