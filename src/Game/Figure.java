@@ -1,3 +1,8 @@
+/*Authors: Daniel Bily(xbilyd01), Jakub Gajdosik(xgajdo24)
+ * 
+ * Contains interface for figure 
+ */
+
 package Game;
 
 import javafx.scene.image.Image;
@@ -13,7 +18,6 @@ public interface Figure {
 
 	public boolean getColor();
 	
-	//1 pawn, 2 rook, 3 knight, 4 bishop, 5queen, 6 king 
 	public int getType();
 
 	public Image getIcon();
