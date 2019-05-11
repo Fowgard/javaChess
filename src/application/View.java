@@ -1,3 +1,7 @@
+/*Authors: Daniel Bily(xbilyd01), Jakub Gajdosik(xgajdo24)
+ * 
+ * Contains class for moveContainer, used for storing information that are then put into a table view
+ */
 package application;
 
 import java.io.File;
@@ -19,7 +23,9 @@ import javafx.stage.Stage;
 
 public class View extends Application {
 	ChessHandler handler;
-	
+	/**
+	 * constructor, loads files
+	 */
 	public View()
 	{
 		File directory = new File("lib"+File.separator +"gameSaves");
@@ -31,7 +37,9 @@ public class View extends Application {
 		       System.out.println("Failed to delete "+file);
 		}
 	}
-	
+	/**
+	 * creates window with a scene, loads css 
+	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		FXMLLoader loader = new FXMLLoader(View.class.getResource("tabWindow.fxml"));
@@ -48,7 +56,10 @@ public class View extends Application {
 	        
 		
 	}
-	
+	/**
+	 * launches the start method
+	 * @param args implicit argument that the start method needs
+	 */
 	public void startView(String [] args)
 	{
 		launch(args);

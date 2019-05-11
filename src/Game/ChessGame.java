@@ -182,7 +182,9 @@ public class ChessGame {
 		
 		return true;
 	}
-
+	/**
+	 * takes a move back, takes the last record from stack and puts in on board
+	 */
 	public void undo() {
         this.histIndex--;
 		Figure[][] figures = history.get(this.histIndex);
@@ -193,7 +195,9 @@ public class ChessGame {
             }
         }
 	}
-	
+	/**
+	 * takes a move forward
+	 */
 	public void redo(){
         this.histIndex++;
 		Figure[][] figures = history.get(this.histIndex);
@@ -204,7 +208,9 @@ public class ChessGame {
             }
         }
 	}
-	
+	/**
+	 * changes records in file if they were changed by using undo and moving a piece manually
+	 */
 	public void changeHistory() {
 		int keepLines = Math.floorDiv(histIndex,2);
 		boolean keepOneMore = Math.floorMod(histIndex,2) == 1;
@@ -243,15 +249,26 @@ public class ChessGame {
     	history.remove(histIndex+1);
     }
 	}
-	
+	/**
+	 * getter for "pointer" into array that stores all moves
+	 * @return int value of the index
+	 */
 	public int getHistIndex() {
 		return this.histIndex;
 	}
-	
+	/**
+	 * getter for size of an array that stores all moves
+	 * @return int value
+	 */
 	public int getHistSize() {
 		return this.history.size();
 		}
-	
+	/**
+	 * checks if a king is checked
+	 * @param whitesMove who moved the last piece
+	 * @param board board of the game
+	 * @return true if the king is checked, false if not
+	 */
 	public boolean isCheck(boolean whitesMove, Board board) {
 		Figure king = null;
         for (int col = 0; col < 8; col++) {
@@ -281,7 +298,11 @@ public class ChessGame {
          }
 		return false;
 	}
-	
+	/**
+	 * Checks for check mate
+	 * @param whitesMove who did the last move
+	 * @return true if check mate false if not
+	 */
 	public boolean isCheckMate(boolean whitesMove) {
 		Boolean retval = true;
         for (int col = 0; col < 8; col++) {
@@ -312,7 +333,13 @@ public class ChessGame {
          }
 		return retval;
 	}
-	
+	/**
+	 * Checks if a player is check mating himself(by moving a piece that protects his king)
+	 * @param figure figure that the player wants to move
+	 * @param field  destination of the figure
+	 * @param whitesMove who did the last move
+	 * @return true if check mate, false otherwise
+	 */
 	public boolean selfCheckMate(Figure figure, Field field,boolean whitesMove)
 	{
 		makeTmpBoard(this.board.getField(figure.getCol(),figure.getRow()),field);
@@ -321,7 +348,12 @@ public class ChessGame {
 				
 		return false;
 	}
-	
+	/**
+	 * creates a temporary board where check mate is tested(can the king be saved)
+	 * 
+	 * @param from source field
+	 * @param to destination field
+	 */
 	public void makeTmpBoard(Field from, Field to) {
 		this.tmpBoard = new Board();
         for (int col = 0; col < 8; col++) {
@@ -333,23 +365,39 @@ public class ChessGame {
         this.tmpBoard.getField(to.getCol(),to.getRow()).getFigure().updateRC(to);
         this.tmpBoard.getField(from.getCol(),from.getRow()).removeFigure();
 	}
-	
+	/**
+	 * getter for check flag
+	 * @return boolean value
+	 */
 	public boolean getCheck(){
 		return this.check;
 	}
-	
+	/**
+	 * getter for check mate flag
+	 * @return boolean value
+	 */
 	public boolean getCheckMate(){
 		return this.checkMate;
 	}
-	
+	/**
+	 * setter for check
+	 * @param check true or false
+	 */
 	public void setCheck(boolean check){
 		this.check = check;
 	}
-	
+	/**
+	 * setter for check mate
+	 * @param checkMate true or false
+	 */
 	public void setCheckMate(boolean checkMate){
 		this.checkMate = checkMate;
 	}
-	
+	/**
+	 * checks if a piece can save the king
+	 * @param field field on which the piece stands
+	 * @return true if the king can be saves, false otherwise
+	 */
 	public boolean isEscape(Field field) {
 		for(int i = 0; i <this.escape.size(); i++)
 		{
@@ -358,7 +406,11 @@ public class ChessGame {
 		}
 		return false;
 	}
-	
+	/**
+	 * checks if the king has a way to escape
+	 * @param field field on which the king stands
+	 * @return true if the king can escape false otherwise
+	 */
 	public boolean isKingEscape(Field field) {
 		for(int i = 0; i <this.escapeKing.size(); i++)
 		{
@@ -367,11 +419,18 @@ public class ChessGame {
 		}
 		return false;
 	}
-	
+	/**
+	 * setter for a flag that says if moves are being loaded from file or performed manually
+	 * @param loadingFile true or false
+	 */
 	public void setLoadingFile(boolean loadingFile) {
 		this.loadingFile = loadingFile;
 	}
-	
+	/**
+	 * setter for file that contains moves
+	 * @param gameCounter id of a game, every game has its file
+	 * @throws Exception if the file can not be accessed
+	 */
 	public void setFile(int gameCounter) throws Exception {
 		this.file = new File("lib"+File.separator+"gameSaves"+File.separator+"game"+gameCounter+".txt");
 		if(file.createNewFile())
@@ -382,7 +441,10 @@ public class ChessGame {
 			file.createNewFile();
 		}
 	}
-	
+	/**
+	 * setter for file
+	 * @return file that the game uses for moves
+	 */
 	public File getFile() {
 		return this.file;
 	}
@@ -390,7 +452,10 @@ public class ChessGame {
 	public boolean getLoadingFile() {
 		return this.loadingFile;
 	}
-	
+	/**
+	 * shows an alert window with an error
+	 * @param message specific error message
+	 */
 	public void showError(String message)
 	{
 		Alert alert = new Alert(Alert.AlertType.WARNING);
