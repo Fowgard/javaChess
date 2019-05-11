@@ -1,3 +1,8 @@
+/*Authors: Daniel Bily(xbilyd01), Jakub Gajdosik(xgajdo24)
+ * 
+ * Contains the class which handles GUI actions
+ */
+
 package application;
 
 import java.io.BufferedReader;
@@ -107,11 +112,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     @FXML
     private TextField textField;
 
-	public MainGame getGame() {
-		return this.mainGame;
-	}
-
-	
+	/***
+	 * handles the clicks on chess board and moving pieces 
+	 * event click on field
+	 */
 	@Override
 	public void handle(ActionEvent event) {		
 		for (int row = 0; row < 8; row++) {
@@ -280,6 +284,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
             }
 		} 
 	}
+	/***
+	 * game goes one move back
+	 */
 	@FXML
 	public void undo() {
 		if(this.mainGame.game.getHistIndex() > 0) {
@@ -299,6 +306,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 			updateTable();
 		}
 	}
+	/**
+	 *  game goes one move forward
+	 */
 	@FXML
 	public void redo()
 	{
@@ -321,7 +331,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 	
 	}
 	
-
+	/***
+	 * automatically plays the game backwards
+	 * @param event click on autoBackwards button
+	 */
     @FXML
     void autoBackwards(ActionEvent event) {
     	timeLine = new Timeline(new KeyFrame(Duration.seconds(Math.round(SpeedSlider.getValue())), new EventHandler<ActionEvent>() {
@@ -335,7 +348,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     	timeLine.play();
 
     }
-
+	/***
+	 * automatically plays the game Forwards
+	 * @param event click on autoForwards button
+	 */
     @FXML
     void autoForwards(ActionEvent event) throws InterruptedException {
     	timeLine = new Timeline(new KeyFrame(Duration.seconds(Math.round(SpeedSlider.getValue())), new EventHandler<ActionEvent>() {
@@ -348,7 +364,11 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     	timeLine.setCycleCount(mainGame.game.getHistSize()-mainGame.game.getHistIndex()-1);
     	timeLine.play();
     }
-
+    /***
+     * creates file-chooser window and loads the game
+     * @param event click on Choose game file button
+     * @throws Exception file Exception
+     */
     @FXML
     void chooseFile(ActionEvent event) throws Exception {
     	FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
@@ -371,13 +391,20 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 		writer.close();
 		updateTable();
     }
-
+    /***
+     * resets game to starting positions
+     * @param event click on Reset button
+     */
     @FXML
     void reset(ActionEvent event) {
     	while (this.mainGame.game.getHistIndex() > 0)
     		this.undo();
     }
-
+    /***
+     * creates file-saver window and saves the game transcription
+     * @param event click on game save button
+     * @throws Exception file Exception
+     */
     @FXML
     void saveGame(ActionEvent event) throws Exception {
     	FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
@@ -398,13 +425,20 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     		writer.close();
     	}
     }
-
+    /***
+     * stops auto-playing
+     * @param event click on stop button
+     */
     @FXML
     void stop(ActionEvent event) {
 	  	if(timeLine != null)
 	  		timeLine.stop();
     }
-    
+    /***
+     * creates a new tab with a new chess game
+     * @param event click on new tab button
+     * @throws Exception file Exception
+     */
     @FXML
     void addNewTab(Event event) throws Exception{
     	FXMLLoader loader = new FXMLLoader(View.class.getResource("Chess.fxml"));
@@ -478,7 +512,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
        
     }
     
-	 
+	/***
+	 * handles clicking on the table(choosing a move)
+	 * @param event
+	 */
     @FXML
     void tableClicked(MouseEvent event) {
     	int fromLine;
@@ -507,7 +544,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 
     }
     
-
+    /**
+     * takes information from a file and puts them into the table
+     */
     private void updateTable()
     {
     	MoveTable.getItems().clear();
@@ -557,7 +596,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         	 this.mainGame.game.showError("File error");
          }
     }
-    
+    /**
+     * checks if a pawn can be promoted
+     * @param figure the pawn being checked
+     */
     public void checkPromotion(Figure figure)
     {
     	
@@ -662,29 +704,47 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     	}
     	
     }
-    
+    /**
+     * handles clicking on confirm button
+     * @param stage stage to be closed  after clicking the confirm button
+     */
     public void buttonConfirm(Stage stage)
     {
     	stage.close();
     }
     
-    
+    /**
+     * called if pawn is being promoted to a rook
+     * @param promotedPawn pawn to be promoted
+     */
     public void promotionRook(Pawn promotedPawn)
     {
     	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());
     	field.setFigure(new Rook(promotedPawn.getCol(),promotedPawn.getRow(),promotedPawn.getColor()));
     	
     }
+    /**
+     * called if pawn is being promoted to a bishop
+     * @param promotedPawn pawn to be promoted
+     */
     public void promotionBishop(Pawn promotedPawn)
     {
     	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());
     	field.setFigure(new Bishop(promotedPawn.getCol(),promotedPawn.getRow(),promotedPawn.getColor()));
     }
+    /**
+     * called if pawn is being promoted to a knight
+     * @param promotedPawn pawn to be promoted
+     */
     public void promotionKnight(Pawn promotedPawn)
     {
     	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());
     	field.setFigure(new Knight(promotedPawn.getCol(),promotedPawn.getRow(),promotedPawn.getColor()));
     }
+    /**
+     * called if pawn is being promoted to a queen
+     * @param promotedPawn pawn to be promoted
+     */
     public void promotionQueen(Pawn promotedPawn)
     {
     	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());

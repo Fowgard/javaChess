@@ -1,3 +1,8 @@
+/*Authors: Daniel Bily(xbilyd01), Jakub Gajdosik(xgajdo24)
+ * 
+ * Contains the class which checks file validity 
+ */
+
 package application;
 
 import java.io.BufferedReader;
@@ -28,7 +33,13 @@ public class moveParser {
 	private static final Pattern pTypeS = Pattern.compile(".*([K|D|V|S|J|p]).*");
 	private static final Pattern pColS = Pattern.compile(".*([a-h]).*");
 	private static final Pattern pRowS = Pattern.compile(".*([1-8]).*");
-	
+	/**
+	 * initialize values and starts file checking
+	 * @param file contains loaded file
+	 * @param mainGame is game to which the file is loaded
+	 * @param textField field which shows game status in GUI
+	 * @throws Exception mostly file exception
+	 */
 	public moveParser(File file, MainGame mainGame, TextField textField) throws Exception
 	{
 		this.file = file;
@@ -36,7 +47,10 @@ public class moveParser {
 		this.textField = textField;
 		fileParse();
 	}
-	
+	/***
+	 * checks format of moves in file and calls correct whole file-checker
+	 * @throws Exception file Exception
+	 */
 	public void fileParse() throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line = br.readLine();
@@ -77,7 +91,11 @@ public class moveParser {
 			this.mainGame.game.showError("Error in File parser no line");
 		}
 	}
-	
+	/***
+	 * checks the whole file with long move format
+	 * @return if file has correct format
+	 * @throws Exception file Exception
+	 */
 	public boolean longParseOk() throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line = br.readLine();
@@ -99,6 +117,11 @@ public class moveParser {
 		}		
 		return true;
 	}
+	/***
+	 * checks the whole file with short move format
+	 * @return if file has correct format
+	 * @throws Exception file Exception
+	 */
 	public boolean shortParseOk() throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line = br.readLine();
@@ -122,7 +145,11 @@ public class moveParser {
 		return true;
 	}
 	
-	
+	/***
+	 * loads and splits lines for simulation of long moves
+	 * @return if move can't be done
+	 * @throws Exception file Exception
+	 */
 	public boolean longSimulation() throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line = br.readLine();
@@ -149,7 +176,11 @@ public class moveParser {
 		}
 		return true;
 	}
-	
+	/***
+	 * simulates the moves in file for long move type
+	 * @param move contains one move string from file
+	 * @return if move can't be done
+	 */
 	public boolean longDoMoves(String move) {
 		Matcher type = pType.matcher(move);
 		Matcher col = pCol.matcher(move);
@@ -271,7 +302,11 @@ public class moveParser {
 		
 		return true;
 	}
-	
+	/***
+	 * loads and splits lines for simulation of short moves
+	 * @return if move can't be done
+	 * @throws Exception file Exception
+	 */
 	public boolean shortSimulation() throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line = br.readLine();
@@ -298,7 +333,11 @@ public class moveParser {
 		}
 		return true;
 	}
-	
+	/***
+	 * simulates the moves in file for short move type
+	 * @param move contains one move string from file
+	 * @return if move can't be done
+	 */
 	public boolean shortDoMoves(String move) {
 		Matcher type = pTypeS.matcher(move);
 		Matcher col = pColS.matcher(move);
@@ -466,7 +505,12 @@ public class moveParser {
 		return true;
 	}
 	
-	
+	/***
+	 * translates figure type from file to game interpretation and checks if the one on board is the same
+	 * @param field where the figure is located
+	 * @param type type of figure from file
+	 * @return if the figure from file is on the board
+	 */
 	public boolean checkFigureType(Field field,String type) {
 		if(!field.isEmpty())
 			switch(type)
