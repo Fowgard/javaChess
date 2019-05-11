@@ -37,14 +37,14 @@ public class Pawn implements Figure{
 			{	
 				if((this.row + 1) == field.getRow())
 					return true;
-				else if (this.row == 1 && (this.row + 2) == field.getRow())
+				else if (this.row == 1 && (this.row + 2) == field.getRow() && board.getField(this.col, this.row+1).isEmpty())
 					return true;
 			}
 			else
 			{
 				if((this.row - 1) == field.getRow())
 					return true;
-				else if (this.row == 6 && (this.row - 2) == field.getRow())
+				else if (this.row == 6 && (this.row - 2) == field.getRow()&& board.getField(this.col, this.row-1).isEmpty())
 					return true;
 			}
 		}

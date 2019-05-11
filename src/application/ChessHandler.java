@@ -26,6 +26,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -104,7 +106,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     
     @FXML
     private TextField textField;
-	
+	boolean wait = false;
+	private static final class Lock { }
+	private final Object lock = new Lock();
 	public MainGame getGame() {
 		return this.mainGame;
 	}
@@ -112,7 +116,6 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 	
 	@Override
 	public void handle(ActionEvent event) {		
-		
 		for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col ++) {
             	if(event.getSource() == this.mainGame.game.board.getField(col,row)) {
@@ -121,9 +124,66 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
             		{
             			if(this.mainGame.game.move(this.mainGame.figureOnMove, this.mainGame.game.board.getField(col,row), this.mainGame.whitesMove) && this.mainGame.game.board.getField(col,row).getStyleClass().contains("highlight"))
             			{
-            				if(this.mainGame.figureOnMove.getType()== 1)
+            				if(this.mainGame.figureOnMove.getType()== 1 && !this.mainGame.game.getLoadingFile())
+            				{
+            					
             					this.checkPromotion(this.mainGame.figureOnMove);
+
+            					if (!this.mainGame.whitesMove && this.mainGame.figureOnMove.getRow()==0 || this.mainGame.whitesMove && this.mainGame.figureOnMove.getRow()==7)
+            					{
+            						try {
+	        							BufferedWriter writer = new BufferedWriter(new FileWriter(this.mainGame.game.getFile(), true));
+	        							switch(this.mainGame.game.board.getField(this.mainGame.figureOnMove.getCol(),this.mainGame.figureOnMove.getRow()).getFigure().getType())
+	        							{
+	        								case(2): writer.append("V");
+	        									break;
+	        								case(3): writer.append("J");
+	        									break;
+	        								case(4): writer.append("S");
+	        									break;
+	        								case(5): writer.append("D");
+	        									break;
+	        								default: this.mainGame.game.showError(("error wrong figure type"));
+	        							}
+	        							writer.close();
+	        						}catch(Exception ex) {
+	        							this.mainGame.game.showError("File error");
+	        						}
+            					}
+            					if(this.mainGame.game.isCheck(this.mainGame.whitesMove, this.mainGame.game.board))
+            					{
+            						this.mainGame.game.setCheck(true); 
+            						if(this.mainGame.game.isCheckMate(this.mainGame.whitesMove))
+            						{
+            							this.mainGame.game.setCheckMate(true);
+            						}
+            						else
+            							this.mainGame.game.setCheckMate(false);
+            					}
+            					else 
+            						this.mainGame.game.setCheck(false);
+            					
+            				}
             				
+        					if(!this.mainGame.game.getLoadingFile())
+        					{
+        						try {
+        							BufferedWriter writer = new BufferedWriter(new FileWriter(this.mainGame.game.getFile(), true));
+        							if(this.mainGame.game.getCheck())
+        								if(this.mainGame.game.getCheckMate())
+        									writer.append("#");
+        								else
+        									writer.append("+");
+        							if(!this.mainGame.whitesMove)
+        								writer.append("\n");
+        							else
+        								writer.append(" ");
+        							writer.close();
+        						}catch(Exception ex) {
+        							this.mainGame.game.showError("File error");
+        						}
+        					}
+        					
             				this.mainGame.whitesMove = !this.mainGame.whitesMove;
             				if(this.mainGame.whitesMove)
             				{
@@ -300,6 +360,18 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     	
    
     	moveParser= new moveParser(file, mainGame);
+    	BufferedReader buf = new BufferedReader(new FileReader(file));
+		String line = buf.readLine();
+		StringBuilder sb = new StringBuilder();
+		while(line != null){
+			sb.append(line).append("\n");
+			line = buf.readLine();
+		} 
+		String fileSave = sb.toString();
+    	BufferedWriter writer = new BufferedWriter(new FileWriter(this.mainGame.game.getFile(), false));
+		writer.write(fileSave.toString());
+		writer.close();
+		updateTable();
     }
 
     @FXML
@@ -484,7 +556,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
  			
          }catch(Exception Ex){
         	 Ex.printStackTrace();
- 			System.out.println("fuasdck");
+        	 this.mainGame.game.showError("File error");
          }
     }
     
@@ -534,9 +606,12 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         	Stage stage = new Stage();
         	stage.setTitle("PROMOTION");
         	stage.setScene(scene);
-        	stage.show();
+
         	ok.setOnAction(event -> buttonConfirm(stage));
         	queen.fire();
+        	stage.showAndWait();
+        	
+
     	}	
     	else if (!this.mainGame.whitesMove && this.mainGame.figureOnMove.getRow()==0)
     	{
@@ -579,11 +654,14 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         	Stage stage = new Stage();
         	stage.setTitle("PROMOTION");
         	stage.setScene(scene);
-        	stage.show();
+
         	ok.setOnAction(event -> buttonConfirm(stage));
         	queen.fire();
+        	stage.showAndWait();
+
+        	queen.fire();
+
     	}
-    
     	
     }
     

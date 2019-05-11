@@ -16,6 +16,7 @@ import Figures.Knight;
 import Figures.Pawn;
 import Figures.Queen;
 import Figures.Rook;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -136,7 +137,7 @@ public class ChessGame {
 			}
 			catch (Exception ex)
 			{
-				System.out.println("fuck");
+				this.showError("File error");
 			}
 		}
 		
@@ -146,34 +147,17 @@ public class ChessGame {
 		figure.updateRC(field);
 		if(isCheck(whitesMove, this.board))
 		{
-			this.check = true; // TODO sach
+			this.check = true; 
 			if(isCheckMate(whitesMove))
 			{
-				this.checkMate = true;// TODO mat
+				this.checkMate = true;
 			}
 			else
 				this.checkMate = false;
 		}
 		else 
 			this.check = false;
-		if(!this.loadingFile)
-		{
-			try {
-				BufferedWriter writer = new BufferedWriter(new FileWriter(this.file, true));
-				if(this.check)
-					if(this.checkMate)
-						writer.append("#");
-					else
-						writer.append("+");
-				if(!whitesMove)
-					writer.append("\n");
-				else
-					writer.append(" ");
-				writer.close();
-			}catch(Exception ex) {
-				System.out.println("fuck");
-			}
-		}
+		
 		addHistory();
 		
 		return true;
@@ -213,10 +197,7 @@ public class ChessGame {
         {
     		currentLine = reader.readLine();
     		if(currentLine == null)
-    		{
-    			System.out.println("file was manipulated");
-    			return; //TODO error file was manipulated
-    		}
+    			return;
     		fileSave.append(currentLine+"\n");
     		keepLines--;
     	}
@@ -224,10 +205,7 @@ public class ChessGame {
     	{
     		currentLine = reader.readLine();
     		if(currentLine == null)
-    		{
-    			System.out.println("file was manipulated");
-    			return; //TODO error file was manipulated
-    		}
+    			return;
     		String[] oneMove = currentLine.split(" ");
     		fileSave.append(oneMove[0]+" ");
     	}
@@ -238,7 +216,7 @@ public class ChessGame {
 		writer.close();
 		
     }catch(Exception Ex){
-		System.out.println("fuck");
+    	this.showError("File error");
     }
 	    
 	while(histIndex < history.size()-1){
@@ -267,7 +245,7 @@ public class ChessGame {
             }
          }
         if(king == null)
-        	System.out.println("konec hry");
+        	this.showError("King not found");
         for (int col = 0; col < 8; col++) {
             for (int row = 0; row < 8; row++) {
             	if(!board.getField(col,row).isEmpty())
@@ -387,5 +365,18 @@ public class ChessGame {
 	
 	public File getFile() {
 		return this.file;
+	}
+	
+	public boolean getLoadingFile() {
+		return this.loadingFile;
+	}
+	
+	public void showError(String message)
+	{
+		Alert alert = new Alert(Alert.AlertType.WARNING);
+		alert.setTitle("Error");
+		alert.setContentText(message);
+		alert.showAndWait();
+		System.exit(1);
 	}
 }

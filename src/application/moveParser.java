@@ -50,7 +50,8 @@ public class moveParser {
 					this.mainGame.game.setLoadingFile(false);
 				}	
 				else
-					System.out.println("file is not ok");
+					this.mainGame.game.showError("file is not ok");
+					
 			}
 			else if( splited[0].matches("[K|D|V|S|J|p]?[a-h]([a-h]|[0-8])?[0-8]"))
 			{
@@ -61,15 +62,15 @@ public class moveParser {
 					this.mainGame.game.setLoadingFile(false);
 				}	
 				else
-					System.out.println("file is not ok");
+					this.mainGame.game.showError("file is not ok");
 			}
 			else
 			{
-				System.out.println("Error in File parser bad format");			
+				this.mainGame.game.showError("Error in File parser bad format");			
 			}
 		}
 		else {
-			System.out.println("Error in File parser no line");
+			this.mainGame.game.showError("Error in File parser no line");
 		}
 	}
 	
@@ -82,13 +83,13 @@ public class moveParser {
 			
 			while(splited.length ==2 && (line = br.readLine())!= null)
 			{
-				if(!splited[0].matches("(K|D|V|S|J|p)?[a-h][0-8](x)?[a-h][0-8](\\+|#)?") ||!splited[1].matches("(K|D|V|S|J|p)?[a-h][0-8](x)?[a-h][0-8](\\+|#)?"))
+				if(!splited[0].matches("(K|D|V|S|J|p)?[a-h][0-8](x)?[a-h][0-8](K|D|V|S|J|p)?(\\+|#)?") ||!splited[1].matches("(K|D|V|S|J|p)?[a-h][0-8](x)?[a-h][0-8](K|D|V|S|J|p)?(\\+|#)?"))
 					return false;
 				splited = line.split(" ");
 			}
 			if(splited.length == 1)
 			{
-				if(!splited[0].matches("(K|D|V|S|J|p)?[a-h][0-8](x)?[a-h][0-8](\\+|#)?"))
+				if(!splited[0].matches("(K|D|V|S|J|p)?[a-h][0-8](x)?[a-h][0-8](K|D|V|S|J|p)?(\\+|#)?"))
 					return false;
 			}
 		}		
@@ -104,13 +105,13 @@ public class moveParser {
 			
 			while(splited.length ==2 && (line = br.readLine())!= null)
 			{
-				if(!splited[0].matches("[K|D|V|S|J|p]?(x)?[a-h]([a-h]|[0-8])?[0-8](\\+|#)?") ||!splited[1].matches("[K|D|V|S|J|p]?(x)?[a-h]([a-h]|[0-8])?[0-8](\\+|#)?"))
+				if(!splited[0].matches("[K|D|V|S|J|p]?(x)?[a-h]([a-h]|[0-8])?[0-8](K|D|V|S|J|p)?(\\+|#)?") ||!splited[1].matches("[K|D|V|S|J|p]?(x)?[a-h]([a-h]|[0-8])?[0-8](K|D|V|S|J|p)?(\\+|#)?"))
 					return false;
 				splited = line.split(" ");
 			}
 			if(splited.length == 1)
 			{
-				if(!splited[0].matches("[K|D|V|S|J|p]?(x)?[a-h]([a-h]|[0-8])?[0-8](\\+|#)?"))
+				if(!splited[0].matches("[K|D|V|S|J|p]?(x)?[a-h]([a-h]|[0-8])?[0-8](K|D|V|S|J|p)?(\\+|#)?"))
 					return false;
 			}
 		}		
@@ -174,26 +175,10 @@ public class moveParser {
 		boolean whitesTurn = this.mainGame.whitesMove;
 		boolean check = move.contains("+");
 		boolean checkMate = move.contains("#");
-		
-		//is figure type correct 1.
-		/*if(move.indexOf(typeT) == 0) 
-		{
-			if(!checkFigureType(fieldFrom,typeT))
-			{
-				System.out.println("1");
-				return false;
-			}
-		}
-		else
-			if(!checkFigureType(fieldFrom,"")) //situation when pawn gets promoted
-			{
-				System.out.println("99");
-				return false;
-			}
-		*/
+
 		if(!checkFigureType(fieldFrom,typeT))
 		{
-			System.out.println("1");
+			System.out.println("1");//TODO
 			return false;
 		}
 		
@@ -203,50 +188,43 @@ public class moveParser {
 		if(move.contains("x"))
 			if(fieldTo.isEmpty())
 			{
-				System.out.println("2");
+				System.out.println("2");//TODO
 				return false;
 			}
 		
 		fieldTo.fire();
-		
+		if(typeUp != "")
+		{	
+			switch(typeUp)
+			{
+				case("D"): fieldTo.setFigure(new Queen(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+					break;
+				case("J"): fieldTo.setFigure(new Knight(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+				break;
+				case("V"): fieldTo.setFigure(new Rook(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+				break;
+				case("S"): fieldTo.setFigure(new Bishop(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+				break;
+				default: return false;
+			}
+		}
 		if(this.mainGame.whitesMove == whitesTurn)
 		{
-			System.out.println("3");
+			System.out.println("3");//TODO
 			return false;
 		}
 		whitesTurn = Boolean.valueOf(this.mainGame.whitesMove);
-		/*
-		if(move.indexOf(typeT) != 0)
-		{
-			if(!checkFigureType(fieldTo,typeT))
-			{
-				System.out.println("4");
-				return false;
-			}
-		}
-		else if(type.groupCount() == 2)
-			if(!checkFigureType(fieldTo,typeT))
-			{
-				System.out.println("6");
-				return false;
-			}
-		*/
-		if(typeUp != "")
-			if(!checkFigureType(fieldTo,typeUp))
-			{
-				System.out.println("20");
-				return false;
-			}
+
 		
 		if(this.mainGame.game.getCheck() != check && this.mainGame.game.getCheckMate() != checkMate)
 		{
-			System.out.println("8");
+			System.out.println("8");//TODO
 			return false;
 		}
 	
 		if(this.mainGame.game.getCheckMate() != checkMate)
 		{
-			System.out.println("9");
+			System.out.println("9");//TODO
 			return false;
 		}
 		
@@ -359,7 +337,7 @@ public class moveParser {
 
 		if (fieldFrom == null)
 		{
-			System.out.println("0");
+			System.out.println("0");//TODO
 			return false;
 		}
 
@@ -367,7 +345,7 @@ public class moveParser {
 		//is figure type correct 
 		if(!checkFigureType(fieldFrom,typeT))
 		{
-			System.out.println("1");
+			System.out.println("1");//TODO
 			return false;
 		}
 		
@@ -381,31 +359,37 @@ public class moveParser {
 			}
 		
 		fieldTo.fire();
-		
+		if(typeUp != "")
+		{	
+			switch(typeUp)
+			{
+				case("D"): fieldTo.setFigure(new Queen(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+					break;
+				case("J"): fieldTo.setFigure(new Knight(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+				break;
+				case("V"): fieldTo.setFigure(new Rook(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+				break;
+				case("S"): fieldTo.setFigure(new Bishop(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
+				break;
+				default: return false;
+			}
+		}
 		if(this.mainGame.whitesMove == whitesTurn)
 		{
-			System.out.println("3");
+			System.out.println("3");//TODO
 			return false;
 		}
 		whitesTurn = Boolean.valueOf(this.mainGame.whitesMove);
-		
-		if(typeUp != "")
-			if(!checkFigureType(fieldTo,typeUp))
-			{
-				System.out.println("20");
-				return false;
-			}
-		
-		
+
 		if(this.mainGame.game.getCheck() != check && this.mainGame.game.getCheckMate() != checkMate)
 		{
-			System.out.println("8");
+			System.out.println("8");//TODO
 			return false;
 		}
 	
 		if(this.mainGame.game.getCheckMate() != checkMate)
 		{
-			System.out.println("9");
+			System.out.println("9");//TODO
 			return false;
 		}
 		
