@@ -7,7 +7,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import Figures.Bishop;
+import Figures.Knight;
+import Figures.Pawn;
+import Figures.Queen;
+import Figures.Rook;
 import Game.ChessGame;
+import Game.Field;
 import Game.Figure;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -19,6 +25,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
@@ -29,6 +36,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -91,7 +99,8 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     @FXML
     private TabPane tabPane;
 
-    
+    @FXML
+    private Button closeTabButton;
     
     
 	public ChessHandler()
@@ -107,6 +116,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 	
 	@Override
 	public void handle(ActionEvent event) {		
+		
 		for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col ++) {
             	if(event.getSource() == this.mainGame.game.board.getField(col,row)) {
@@ -115,7 +125,11 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
             		{
             			if(this.mainGame.game.move(this.mainGame.figureOnMove, this.mainGame.game.board.getField(col,row), this.mainGame.whitesMove) && this.mainGame.game.board.getField(col,row).getStyleClass().contains("highlight"))
             			{
+            				if(this.mainGame.figureOnMove.getType()== 1)
+            					this.checkPromotion(this.mainGame.figureOnMove);
+            				
             				this.mainGame.whitesMove = !this.mainGame.whitesMove;
+            				
             				this.updateTable();
             			}
             			
@@ -282,6 +296,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         
 		Tab tab = new Tab("Game");
 		tab.setClosable(true);
+		
 		tab.setContent(Game);
 		
 		//pane with chess
@@ -443,5 +458,134 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
  			System.out.println("fuasdck");
          }
     }
+    
+    public void checkPromotion(Figure figure)
+    {
+    	
+    	
+    	
+    	if(this.mainGame.whitesMove && this.mainGame.figureOnMove.getRow()==7)
+    	{
+    		Pawn promotedPawn = new Pawn(figure.getCol(),figure.getRow(),figure.getColor());
+        	
+        	GridPane gridPane = new GridPane();
+        	
+        	Button rook = new Field(-1,-1);
+        	((Field)rook).setFigure(new Rook(-1,-1,true));
+        	rook.setOnAction(event -> promotionRook(promotedPawn));
+        	
+        	Button bishop = new Field(-1,-1);
+        	((Field)bishop).setFigure(new Bishop(-1,-1,true));
+        	bishop.setOnAction(event -> promotionBishop(promotedPawn));
+        	
+        	Button knight = new Field(-1,-1);
+        	((Field)knight).setFigure(new Knight(-1,-1,true));
+        	knight.setOnAction(event -> promotionKnight(promotedPawn));
+        	
+        	Button queen = new Field(-1,-1);
+        	((Field)queen).setFigure(new Queen(-1,-1,true));
+        	queen.setOnAction(event -> promotionQueen(promotedPawn));
+        	
+        	
+        	gridPane.add(rook,0,0);
+        	gridPane.add(bishop,1,0);
+        	gridPane.add(knight,2,0);
+        	gridPane.add(queen,3,0);
+        	gridPane.setVgap(10);
+        	
+        	Button ok = new Button("Confirm");
+        	
+        	Pane pain = new Pane();
+        	
+        	gridPane.add(ok,3,1);
+        	gridPane.add(pain, 3, 2);
+        	
+        	
+        	Scene scene = new Scene(gridPane);
+        	Stage stage = new Stage();
+        	stage.setTitle("PROMOTION");
+        	stage.setScene(scene);
+        	stage.show();
+        	ok.setOnAction(event -> buttonConfirm(stage));
+        	queen.fire();
+    	}	
+    	else if (!this.mainGame.whitesMove && this.mainGame.figureOnMove.getRow()==0)
+    	{
+    		Pawn promotedPawn = new Pawn(figure.getCol(),figure.getRow(),figure.getColor());
+        	
+        	GridPane gridPane = new GridPane();
+        	
+        	Button rook = new Field(-1,-1);
+        	((Field)rook).setFigure(new Rook(-1,-1,false));
+        	rook.setOnAction(event -> promotionRook(promotedPawn));
+        	
+        	Button bishop = new Field(-1,-1);
+        	((Field)bishop).setFigure(new Bishop(-1,-1,false));
+        	bishop.setOnAction(event -> promotionBishop(promotedPawn));
+        	
+        	Button knight = new Field(-1,-1);
+        	((Field)knight).setFigure(new Knight(-1,-1,false));
+        	knight.setOnAction(event -> promotionKnight(promotedPawn));
+        	
+        	Button queen = new Field(-1,-1);
+        	((Field)queen).setFigure(new Queen(-1,-1,false));
+        	queen.setOnAction(event -> promotionQueen(promotedPawn));
+        	
+        	
+        	gridPane.add(rook,0,0);
+        	gridPane.add(bishop,1,0);
+        	gridPane.add(knight,2,0);
+        	gridPane.add(queen,3,0);
+        	gridPane.setVgap(10);
+        	
+        	Button ok = new Button("Confirm");
+        	
+        	Pane pain = new Pane();
+        	
+        	gridPane.add(ok,3,1);
+        	gridPane.add(pain, 3, 2);
+        	
+        	
+        	Scene scene = new Scene(gridPane);
+        	Stage stage = new Stage();
+        	stage.setTitle("PROMOTION");
+        	stage.setScene(scene);
+        	stage.show();
+        	ok.setOnAction(event -> buttonConfirm(stage));
+        	queen.fire();
+    	}
+    
+    	
+    }
+    
+    public void buttonConfirm(Stage stage)
+    {
+    	stage.close();
+    }
+    
+    
+    public void promotionRook(Pawn promotedPawn)
+    {
+    	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());
+    	field.setFigure(new Rook(promotedPawn.getCol(),promotedPawn.getRow(),promotedPawn.getColor()));
+    	
+    }
+    public void promotionBishop(Pawn promotedPawn)
+    {
+    	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());
+    	field.setFigure(new Bishop(promotedPawn.getCol(),promotedPawn.getRow(),promotedPawn.getColor()));
+    }
+    public void promotionKnight(Pawn promotedPawn)
+    {
+    	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());
+    	field.setFigure(new Knight(promotedPawn.getCol(),promotedPawn.getRow(),promotedPawn.getColor()));
+    }
+    public void promotionQueen(Pawn promotedPawn)
+    {
+    	Field field = this.mainGame.game.board.getField(promotedPawn.getCol(),promotedPawn.getRow());
+    	field.setFigure(new Queen(promotedPawn.getCol(),promotedPawn.getRow(),promotedPawn.getColor()));
+    }
+    
+    
     
 }
