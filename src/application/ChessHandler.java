@@ -25,6 +25,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -37,8 +38,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 
 	MainGame mainGame;
 	Timeline timeLine;
+	int gameCounter=0;
 
 	final FileChooser fileChooser = new FileChooser();
+
 	moveParser moveParser;
 	
 	@FXML
@@ -90,15 +93,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     
     @FXML
     private TabPane tabPane;
-
     
-    
-    
-	public ChessHandler()
-	{
-		this.mainGame = new MainGame();
-
-	}
+    @FXML
+    private TextField textField;
 	
 	public MainGame getGame() {
 		return this.mainGame;
@@ -116,6 +113,43 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
             			if(this.mainGame.game.move(this.mainGame.figureOnMove, this.mainGame.game.board.getField(col,row), this.mainGame.whitesMove) && this.mainGame.game.board.getField(col,row).getStyleClass().contains("highlight"))
             			{
             				this.mainGame.whitesMove = !this.mainGame.whitesMove;
+            				if(this.mainGame.whitesMove)
+            				{
+            					if(this.mainGame.game.getCheck())
+            					{
+                					if(this.mainGame.game.getCheckMate())
+                					{
+                						this.textField.setText("Black Wins!");
+                					}
+                					else
+                					{
+                						this.textField.setText("White is checked");
+                					}
+            					}
+            					else
+            					{
+            						this.textField.setText("White's turn");
+            					}
+            				}
+            				else
+            				{
+            					if(this.mainGame.game.getCheck())
+            					{
+                					if(this.mainGame.game.getCheckMate())
+                					{
+                						this.textField.setText("White Wins!");
+                					}
+                					else
+                					{
+                						this.textField.setText("Black is checked");
+                					}
+            					}
+            					else
+            					{
+            						this.textField.setText("Black's turn");
+            					}
+            				}
+            				
             				this.updateTable();
             			}
             			
@@ -248,8 +282,11 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 
     @FXML
     void chooseFile(ActionEvent event) throws Exception {
+    	FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+    	fileChooser.getExtensionFilters().add(extFilter);
     	File file = this.fileChooser.showOpenDialog(stage);
     	
+   
     	moveParser= new moveParser(file, mainGame);
     }
 
@@ -260,8 +297,24 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     }
 
     @FXML
-    void saveGame(ActionEvent event) {
-
+    void saveGame(ActionEvent event) throws Exception {
+    	FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+    	File file = this.fileChooser.showSaveDialog(stage);
+    	if(file != null)
+    	{
+    		BufferedReader buf = new BufferedReader(new FileReader(this.mainGame.game.getFile()));
+    		String line = buf.readLine();
+    		StringBuilder sb = new StringBuilder();
+    		while(line != null){
+    			sb.append(line).append("\n");
+    			line = buf.readLine();
+    		} 
+    		String fileSave = sb.toString();
+        	BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
+    		writer.write(fileSave.toString());
+    		writer.close();
+    	}
     }
 
     @FXML
@@ -272,13 +325,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     
     @FXML
     void addNewTab(Event event) throws Exception{
-    	
-    	
     	FXMLLoader loader = new FXMLLoader(View.class.getResource("Chess.fxml"));
 		BorderPane Game = loader.load();
 		ChessHandler chessHandler = loader.<ChessHandler>getController();
-		//chessHandler.mainGame = this.mainGame;
-		chessHandler.mainGame = new MainGame();
+		chessHandler.mainGame = new MainGame(this.gameCounter++);
         
 		Tab tab = new Tab("Game");
 		tab.setClosable(true);
@@ -348,7 +398,6 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 	 
     @FXML
     void tableClicked(MouseEvent event) {
-    	//TODO problem v UNDO (mezera), INDEX NA kokot, zaokrouhlit
     	int fromLine;
     	int toLine;
     	int histIndex = this.mainGame.game.getHistIndex() + 1;
@@ -362,10 +411,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     	
     	diff *= 2;
     	diff += histIndex %2 -1;
-    	/*
-    	if(histIndex % 2 == 1)
-    		diff--;
-    	*/
+
     	for(int i = 0; i < diff; i++)
     	{
     		if(fromLine < toLine)
@@ -375,20 +421,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         		this.undo();
         	       	
     	}
-    	
-    	
-    		
-    	
-    	
-    	
-    	
-    	//System.out.println(MoveTable.getSelectionModel().getSelectedItem());
-    	
-    	System.out.println(fromLine + " " + toLine);
+
     }
     
-    
-    //TODO volani, zatim jen pri move undo a redo 
+
     private void updateTable()
     {
     	MoveTable.getItems().clear();
@@ -401,9 +437,8 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     	String move0 = "";
     	String move1 = "";
     	 try {
-         	BufferedReader reader = new BufferedReader(new FileReader("text.txt"));
+         	BufferedReader reader = new BufferedReader(new FileReader(this.mainGame.game.getFile()));
          	String CurrentLine;
-         	//StringBuffer sb=new StringBuffer("");
          	
          	columnID.setCellValueFactory(cellData -> cellData.getValue().getID());
             columnWhite.setCellValueFactory(cellData -> cellData.getValue().getWhiteMove());
@@ -426,14 +461,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
          			move0 = moves[0];
          			move1 = moves[1];
          		}
-         		//System.out.println(moves[0]);
-         		//System.out.println(moves[1]);
          		moveContainer = new MoveContainer(Integer.toString(id),move0,move1);
          		
          		
          		MoveTable.getItems().add(moveContainer);
-         		
-         		//TableView
          	 }
          	reader.close();
          

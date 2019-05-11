@@ -1,4 +1,5 @@
 package Figures;
+import java.io.File;
 import java.io.FileInputStream;
 
 import Game.Board;
@@ -19,10 +20,9 @@ public class Queen implements Figure{
 		this.row =row;
 		this.isWhite = isWhite;
 		this.type = 5;
-		try{this.icon = new Image(new FileInputStream("lib/"+this.isWhite+"/Queen.png"));
+		try{this.icon = new Image(new FileInputStream("lib"+File.separator+this.isWhite+File.separator+"Queen.png"));
 		}
 		catch(Exception e) {
-			try{this.icon = new Image(new FileInputStream("lib\\"+this.isWhite+"\\Queen.png"));}catch(Exception ex) {System.out.println("Error");};
 		};
 	}
 	@Override

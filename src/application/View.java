@@ -1,5 +1,7 @@
 package application;
 
+import java.io.File;
+
 import Game.ChessGame;
 import Game.Figure;
 import javafx.application.Application;
@@ -16,12 +18,18 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class View extends Application {
-	ChessGame game;
 	ChessHandler handler;
 	
 	public View()
 	{
-		
+		File directory = new File("lib\\gameSaves");
+
+		File[] files = directory.listFiles();
+		for (File file : files)
+		{
+		   if (!file.delete())
+		       System.out.println("Failed to delete "+file);
+		}
 	}
 	
 	@Override

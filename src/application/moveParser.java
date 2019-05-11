@@ -56,7 +56,6 @@ public class moveParser {
 			{
 				if(shortParseOk())
 				{
-					System.out.println("file if ok");
 					this.mainGame.game.setLoadingFile(true);
 					shortSimulation();
 					this.mainGame.game.setLoadingFile(false);

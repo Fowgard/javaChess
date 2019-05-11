@@ -1,8 +1,11 @@
 package Game;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
@@ -13,6 +16,7 @@ import Figures.Knight;
 import Figures.Pawn;
 import Figures.Queen;
 import Figures.Rook;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class ChessGame {
@@ -25,9 +29,10 @@ public class ChessGame {
 	private boolean loadingFile;
 	private ArrayList<Field> escape = new ArrayList<Field>();
 	private ArrayList<Field> escapeKing = new ArrayList<Field>();
-	private Stack<String> fileTmp = new Stack<String>();
+	private File file;
 	public ChessGame()
 	{
+		this.loadingFile = false;
 		this.histIndex = -1;
 		this.board = new Board();
         for (int x = 0; x < 8; x++) {
@@ -95,15 +100,15 @@ public class ChessGame {
 			return false;
 		if(!figure.canmove(field,board))
 			return false;
+		changeHistory();
 		if(!this.loadingFile)
 		{
 			try
 			{
-				BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
+				BufferedWriter writer = new BufferedWriter(new FileWriter(this.file, true));
 				switch(figure.getType())
 				{
 					case 1:
-						//writer.append("p");
 						break;
 					case 2:
 						writer.append("V");
@@ -135,19 +140,16 @@ public class ChessGame {
 			}
 		}
 		
-		changeHistory();
 		field.setFigure(figure);
 		this.board.field[figure.getCol()][figure.getRow()].removeFigure();
 		this.board.field[figure.getCol()][figure.getRow()].updateImg();
 		figure.updateRC(field);
 		if(isCheck(whitesMove, this.board))
 		{
-			this.check = true;
-			System.out.println("3ach");
+			this.check = true; // TODO sach
 			if(isCheckMate(whitesMove))
 			{
-				this.checkMate = true;
-				System.out.println("mat");
+				this.checkMate = true;// TODO mat
 			}
 			else
 				this.checkMate = false;
@@ -157,7 +159,7 @@ public class ChessGame {
 		if(!this.loadingFile)
 		{
 			try {
-				BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
+				BufferedWriter writer = new BufferedWriter(new FileWriter(this.file, true));
 				if(this.check)
 					if(this.checkMate)
 						writer.append("#");
@@ -186,37 +188,6 @@ public class ChessGame {
             	this.board.field[x][y].updateImg();
             }
         }
-        try {
-        	BufferedReader reader = new BufferedReader(new FileReader("text.txt"));
-        	String CurrentLine;
-        	String lastLine = "";
-        	StringBuffer sb=new StringBuffer("");
-        	String[] splited = new String[2];
-        	while ((CurrentLine = reader.readLine()) != null) 
-            {
-        		if(lastLine != "")
-        			sb.append(lastLine+"\n");
-                lastLine = CurrentLine;
-                splited = CurrentLine.split("\\s+");
-            }
-        	reader.close();
-        	BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", false));
-			writer.write(sb.toString());
-			if(splited.length == 2)
-			{
-				this.fileTmp.add(" "+splited[1] + "\n");// 
-			
-				writer.append(splited[0]+" ");//TODO +" " correct??
-			}
-			else
-				this.fileTmp.add(splited[0]); // "\n"+splited[0]
-			writer.close();
-			
-			System.out.println(Arrays.toString(fileTmp.toArray())); //prints out stack
-			
-        }catch(Exception Ex){
-			System.out.println("fuck");
-        }
 	}
 	
 	public void redo(){
@@ -228,22 +199,51 @@ public class ChessGame {
             	this.board.field[x][y].updateImg();
             }
         }
-        try {
-        	BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
-        	writer.append(fileTmp.pop());
-        	writer.close();
-        	
-        	System.out.println(Arrays.toString(fileTmp.toArray())); //prints out stack
-        	
-        }catch(Exception Ex){
-        	
-        }
 	}
 	
 	public void changeHistory() {
-		while(histIndex < history.size()-1){
-        	history.remove(histIndex+1);
-        }
+		int keepLines = Math.floorDiv(histIndex,2);
+		boolean keepOneMore = Math.floorMod(histIndex,2) == 1;
+	    try {
+    	BufferedReader reader = new BufferedReader(new FileReader(this.file));
+    	String currentLine;
+    	StringBuffer fileSave=new StringBuffer("");
+    	
+    	while (keepLines > 0) 
+        {
+    		currentLine = reader.readLine();
+    		if(currentLine == null)
+    		{
+    			System.out.println("file was manipulated");
+    			return; //TODO error file was manipulated
+    		}
+    		fileSave.append(currentLine+"\n");
+    		keepLines--;
+    	}
+    	if(keepOneMore)
+    	{
+    		currentLine = reader.readLine();
+    		if(currentLine == null)
+    		{
+    			System.out.println("file was manipulated");
+    			return; //TODO error file was manipulated
+    		}
+    		String[] oneMove = currentLine.split(" ");
+    		fileSave.append(oneMove[0]+" ");
+    	}
+    	reader.close();
+    	
+    	BufferedWriter writer = new BufferedWriter(new FileWriter(this.file, false));
+		writer.write(fileSave.toString());
+		writer.close();
+		
+    }catch(Exception Ex){
+		System.out.println("fuck");
+    }
+	    
+	while(histIndex < history.size()-1){
+    	history.remove(histIndex+1);
+    }
 	}
 	
 	public int getHistIndex() {
@@ -372,5 +372,20 @@ public class ChessGame {
 	
 	public void setLoadingFile(boolean loadingFile) {
 		this.loadingFile = loadingFile;
+	}
+	
+	public void setFile(int gameCounter) throws Exception {
+		this.file = new File("lib"+File.separator+"gameSaves"+File.separator+"game"+gameCounter+".txt");
+		if(file.createNewFile())
+		{}
+		else
+		{
+			file.delete();
+			file.createNewFile();
+		}
+	}
+	
+	public File getFile() {
+		return this.file;
 	}
 }
