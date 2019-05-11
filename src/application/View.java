@@ -22,7 +22,7 @@ public class View extends Application {
 	
 	public View()
 	{
-		File directory = new File("lib\\gameSaves");
+		File directory = new File("lib"+File.separator +"gameSaves");
 
 		File[] files = directory.listFiles();
 		for (File file : files)

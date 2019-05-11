@@ -1,3 +1,8 @@
+/*Authors: Daniel Bily(xbilyd01), Jakub Gajdosik(xgajdo24)
+ * 
+ * Contains class for game 
+ */
+
 package Game;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,6 +36,9 @@ public class ChessGame {
 	private ArrayList<Field> escape = new ArrayList<Field>();
 	private ArrayList<Field> escapeKing = new ArrayList<Field>();
 	private File file;
+	/**
+	 * Constructor, sets the figures on board, initializes variables
+	 */
 	public ChessGame()
 	{
 		this.loadingFile = false;
@@ -57,7 +65,9 @@ public class ChessGame {
         this.board.field[4][0].setFigure(new King(4,0,true));
         this.board.field[4][7].setFigure(new King(4,7,false));        
 	}
-	
+	/**
+	 * saves current positions of figures in stack
+	 */
 	public void addHistory() {
 		Figure[][] figures = new Figure[8][8];
         for (int x = 0; x < 8; x++) {
@@ -68,7 +78,11 @@ public class ChessGame {
 		this.history.add(figures);
 		this.histIndex ++;
 	}
-	
+	/**
+	 * Creates a deep copy of a figure
+	 * @param figure figure to be copied
+	 * @return copied figure
+	 */
 	public Figure copyFigure(Figure figure) {
 		Figure newFig = null;
 		if(figure !=null)
@@ -95,7 +109,13 @@ public class ChessGame {
 			}
 		return newFig;
 	}
-	
+	/**
+	 * performs required move, saves the move into a file
+	 * @param figure figure to be moves
+	 * @param field field to move to
+	 * @param whitesMove whose move it is
+	 * @return true if successfully moves
+	 */
 	public boolean move(Figure figure, Field field, boolean whitesMove) {
 		if(figure == null)
 			return false;
