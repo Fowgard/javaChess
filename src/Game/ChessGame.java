@@ -232,14 +232,14 @@ public class ChessGame {
 		return this.history.size();
 		}
 	
-	public boolean isCheck(boolean whitesMove, Board board) {
+	public boolean isCheck(boolean whitesMove, Board boarda) {
 		Figure king = null;
         for (int col = 0; col < 8; col++) {
             for (int row = 0; row < 8; row++) {
-            	if(!board.getField(col,row).isEmpty())
+            	if(!boarda.getField(col,row).isEmpty())
             	{
-    				if(board.getField(col,row).getFigure().getType()==6 && board.getField(col,row).getFigure().getColor() == !whitesMove)
-                		king = copyFigure(board.getField(col,row).getFigure());
+    				if(boarda.getField(col,row).getFigure().getType()==6 && boarda.getField(col,row).getFigure().getColor() == !whitesMove)
+                		king = copyFigure(boarda.getField(col,row).getFigure());
             	}
 
             }
@@ -248,14 +248,14 @@ public class ChessGame {
         	this.showError("King not found");
         for (int col = 0; col < 8; col++) {
             for (int row = 0; row < 8; row++) {
-            	if(!board.getField(col,row).isEmpty())
+            	if(!boarda.getField(col,row).isEmpty())
             	{
-                	if(board.getField(col,row).getFigure().getColor() == whitesMove)
-                		if(king != null)
-                			if(board.getField(col,row).getFigure().canmove(board.getField(king.getCol(),king.getRow()), board))
-                			{
-                				return true;
-                			}
+                	if(boarda.getField(col,row).getFigure().getColor() == whitesMove)
+                	{
+                		if(boarda.getField(col,row).getFigure().canmove(boarda.getField(king.getCol(),king.getRow()), boarda))
+            				return true;
+                	}
+                		
             	}
             }
          }

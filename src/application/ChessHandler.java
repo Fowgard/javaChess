@@ -106,9 +106,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     
     @FXML
     private TextField textField;
-	boolean wait = false;
-	private static final class Lock { }
-	private final Object lock = new Lock();
+
 	public MainGame getGame() {
 		return this.mainGame;
 	}
@@ -330,7 +328,6 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 
     	    @Override
     	    public void handle(ActionEvent event) {
-    	    	System.out.println("hi");
     	        undo();
     	    }
     	}));
@@ -357,9 +354,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     	FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
     	fileChooser.getExtensionFilters().add(extFilter);
     	File file = this.fileChooser.showOpenDialog(stage);
-    	
+    	if(file == null)
+    		return;
    
-    	moveParser= new moveParser(file, mainGame);
+    	moveParser= new moveParser(file, mainGame, this.textField);
     	BufferedReader buf = new BufferedReader(new FileReader(file));
 		String line = buf.readLine();
 		StringBuilder sb = new StringBuilder();

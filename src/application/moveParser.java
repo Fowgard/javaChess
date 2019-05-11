@@ -15,11 +15,13 @@ import Figures.Pawn;
 import Figures.Queen;
 import Figures.Rook;
 import Game.Field;
+import javafx.scene.control.TextField;
 
 public class moveParser {
 	MainGame mainGame;
-	File file;				//   	C:\Users\Mefisto\Desktop\IJA\javaChess\text.txt
-
+	File file;
+	TextField textField;
+	
 	private static final Pattern pType = Pattern.compile(".*([K|D|V|S|J|p]).*");
 	private static final Pattern pCol = Pattern.compile(".*([a-h]).*([a-h]).*");
 	private static final Pattern pRow = Pattern.compile(".*([1-8]).*([1-8]).*");
@@ -27,10 +29,11 @@ public class moveParser {
 	private static final Pattern pColS = Pattern.compile(".*([a-h]).*");
 	private static final Pattern pRowS = Pattern.compile(".*([1-8]).*");
 	
-	public moveParser(File file, MainGame mainGame) throws Exception
+	public moveParser(File file, MainGame mainGame, TextField textField) throws Exception
 	{
 		this.file = file;
 		this.mainGame = mainGame;
+		this.textField = textField;
 		fileParse();
 	}
 	
@@ -46,11 +49,12 @@ public class moveParser {
 				if(longParseOk())
 				{
 					this.mainGame.game.setLoadingFile(true);
-					longSimulation();
+					if(!longSimulation())
+						this.mainGame.game.showError("Error in File parser bad format");
 					this.mainGame.game.setLoadingFile(false);
 				}	
 				else
-					this.mainGame.game.showError("file is not ok");
+					this.mainGame.game.showError("Error in File parser bad format");
 					
 			}
 			else if( splited[0].matches("[K|D|V|S|J|p]?[a-h]([a-h]|[0-8])?[0-8]"))
@@ -62,7 +66,7 @@ public class moveParser {
 					this.mainGame.game.setLoadingFile(false);
 				}	
 				else
-					this.mainGame.game.showError("file is not ok");
+					this.mainGame.game.showError("Error in File parser bad format");
 			}
 			else
 			{
@@ -119,7 +123,7 @@ public class moveParser {
 	}
 	
 	
-	public void longSimulation() throws Exception {
+	public boolean longSimulation() throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line = br.readLine();
 		if(line != null)
@@ -129,10 +133,10 @@ public class moveParser {
 			while(splited.length ==2 && (line != null))
 			{
 				if(!longDoMoves(splited[0]))
-					return; //  TODO chyba
+					return false;
 				
 				if(!longDoMoves(splited[1]))
-					return; //  TODO chyba
+					return false;
 				line = br.readLine();
 				if(line != null)
 					splited = line.split(" ");
@@ -140,9 +144,10 @@ public class moveParser {
 			if(splited.length == 1)
 			{
 				if(!longDoMoves(splited[0]))
-					return; //  TODO chyba
+					return false;
 			}
-		}	
+		}
+		return true;
 	}
 	
 	public boolean longDoMoves(String move) {
@@ -177,28 +182,23 @@ public class moveParser {
 		boolean checkMate = move.contains("#");
 
 		if(!checkFigureType(fieldFrom,typeT))
-		{
-			System.out.println("1");//TODO
 			return false;
-		}
 		
 		
 		fieldFrom.fire();
 		
 		if(move.contains("x"))
 			if(fieldTo.isEmpty())
-			{
-				System.out.println("2");//TODO
 				return false;
-			}
 		
 		fieldTo.fire();
 		if(typeUp != "")
 		{	
+
 			switch(typeUp)
 			{
 				case("D"): fieldTo.setFigure(new Queen(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
-					break;
+				break;
 				case("J"): fieldTo.setFigure(new Knight(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
 				break;
 				case("V"): fieldTo.setFigure(new Rook(fieldTo.getCol(),fieldTo.getRow(),fieldTo.getFigure().getColor()));
@@ -207,32 +207,72 @@ public class moveParser {
 				break;
 				default: return false;
 			}
+			if(this.mainGame.game.isCheck(!this.mainGame.whitesMove, this.mainGame.game.board))
+			{
+				this.mainGame.game.setCheck(true); 
+				if(this.mainGame.game.isCheckMate(!this.mainGame.whitesMove))
+				{
+					this.mainGame.game.setCheckMate(true);
+				}
+				else
+					this.mainGame.game.setCheckMate(false);
+			}
+			else 
+				this.mainGame.game.setCheck(false);
 		}
-		if(this.mainGame.whitesMove == whitesTurn)
+		if(this.mainGame.whitesMove)
 		{
-			System.out.println("3");//TODO
-			return false;
+			if(this.mainGame.game.getCheck())
+			{
+				if(this.mainGame.game.getCheckMate())
+				{
+					this.textField.setText("Black Wins!");
+				}
+				else
+				{
+					this.textField.setText("White is checked");
+				}
+			}
+			else
+			{
+				this.textField.setText("White's turn");
+			}
 		}
+		else
+		{
+			if(this.mainGame.game.getCheck())
+			{
+				if(this.mainGame.game.getCheckMate())
+				{
+					this.textField.setText("White Wins!");
+				}
+				else
+				{
+					this.textField.setText("Black is checked");
+				}
+			}
+			else
+			{
+				this.textField.setText("Black's turn");
+			}
+		}
+		
+		if(this.mainGame.whitesMove == whitesTurn)
+			return false;
+		
 		whitesTurn = Boolean.valueOf(this.mainGame.whitesMove);
 
 		
 		if(this.mainGame.game.getCheck() != check && this.mainGame.game.getCheckMate() != checkMate)
-		{
-			System.out.println("8");//TODO
 			return false;
-		}
-	
-		if(this.mainGame.game.getCheckMate() != checkMate)
-		{
-			System.out.println("9");//TODO
-			return false;
-		}
 		
+		if(this.mainGame.game.getCheckMate() != checkMate)
+			return false;
 		
 		return true;
 	}
 	
-	public void shortSimulation() throws Exception {
+	public boolean shortSimulation() throws Exception {
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line = br.readLine();
 		if(line != null)
@@ -242,10 +282,10 @@ public class moveParser {
 			while(splited.length ==2 && (line != null))
 			{
 				if(!shortDoMoves(splited[0]))
-					return; //  TODO chyba
+					return false;
 				
 				if(!shortDoMoves(splited[1]))
-					return; //  TODO chyba
+					return false;
 				line = br.readLine();
 				if(line != null)
 					splited = line.split(" ");
@@ -253,9 +293,10 @@ public class moveParser {
 			if(splited.length == 1)
 			{
 				if(!shortDoMoves(splited[0]))
-					return; //  TODO chyba
+					return false;
 			}
-		}	
+		}
+		return true;
 	}
 	
 	public boolean shortDoMoves(String move) {
@@ -291,9 +332,6 @@ public class moveParser {
 		
 		if (col.groupCount()==2)
 		{
-			System.out.println(col.group(0));
-			System.out.println(col.group(1));
-			System.out.println(col.group(2));
 			fieldTo = this.mainGame.game.board.getField(col.group(2).charAt(0)-'a', Integer.valueOf(row.group(1))-1);
 			for(int y = 0; y<8;y++)
 			{
@@ -336,27 +374,18 @@ public class moveParser {
 		}
 
 		if (fieldFrom == null)
-		{
-			System.out.println("0");//TODO
 			return false;
-		}
 
 		
 		//is figure type correct 
 		if(!checkFigureType(fieldFrom,typeT))
-		{
-			System.out.println("1");//TODO
 			return false;
-		}
 		
 		fieldFrom.fire();
 		
 		if(move.contains("x"))
 			if(fieldTo.isEmpty())
-			{
-				System.out.println("2");
 				return false;
-			}
 		
 		fieldTo.fire();
 		if(typeUp != "")
@@ -373,25 +402,65 @@ public class moveParser {
 				break;
 				default: return false;
 			}
+			if(this.mainGame.game.isCheck(!this.mainGame.whitesMove, this.mainGame.game.board))
+			{
+				this.mainGame.game.setCheck(true); 
+				if(this.mainGame.game.isCheckMate(!this.mainGame.whitesMove))
+				{
+					this.mainGame.game.setCheckMate(true);
+				}
+				else
+					this.mainGame.game.setCheckMate(false);
+			}
+			else 
+				this.mainGame.game.setCheck(false);
 		}
-		if(this.mainGame.whitesMove == whitesTurn)
+		if(this.mainGame.whitesMove)
 		{
-			System.out.println("3");//TODO
-			return false;
+			if(this.mainGame.game.getCheck())
+			{
+				if(this.mainGame.game.getCheckMate())
+				{
+					this.textField.setText("Black Wins!");
+				}
+				else
+				{
+					this.textField.setText("White is checked");
+				}
+			}
+			else
+			{
+				this.textField.setText("White's turn");
+			}
 		}
+		else
+		{
+			if(this.mainGame.game.getCheck())
+			{
+				if(this.mainGame.game.getCheckMate())
+				{
+					this.textField.setText("White Wins!");
+				}
+				else
+				{
+					this.textField.setText("Black is checked");
+				}
+			}
+			else
+			{
+				this.textField.setText("Black's turn");
+			}
+		}
+		
+		if(this.mainGame.whitesMove == whitesTurn)
+			return false;
 		whitesTurn = Boolean.valueOf(this.mainGame.whitesMove);
 
 		if(this.mainGame.game.getCheck() != check && this.mainGame.game.getCheckMate() != checkMate)
-		{
-			System.out.println("8");//TODO
 			return false;
-		}
 	
 		if(this.mainGame.game.getCheckMate() != checkMate)
-		{
-			System.out.println("9");//TODO
 			return false;
-		}
 		
 		
 		return true;
