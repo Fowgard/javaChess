@@ -27,11 +27,11 @@
             <Pane maxWidth="20.0" prefHeight="227.0" prefWidth="23.0" />
             <Pane maxWidth="200.0" prefHeight="238.0" prefWidth="158.0">
                <children>
-                  <TableView fx:id="MoveTable" layoutX="-1.0" prefHeight="235.0" prefWidth="157.0">
+                  <TableView fx:id="MoveTable" layoutX="-1.0" onMouseClicked="#tableClicked" prefHeight="235.0" prefWidth="157.0">
                     <columns>
-                      <TableColumn prefWidth="31.0" text="ID" />
-                      <TableColumn prefWidth="61.0" text="White" />
-                        <TableColumn minWidth="0.0" prefWidth="63.0" text="Black" />
+                      <TableColumn fx:id="columnID" prefWidth="31.0" text="ID" />
+                      <TableColumn fx:id="columnWhite" prefWidth="61.0" text="White" />
+                        <TableColumn fx:id="columnBlack" minWidth="0.0" prefWidth="63.0" text="Black" />
                     </columns>
                   </TableView>
                </children>

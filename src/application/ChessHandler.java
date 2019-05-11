@@ -1,6 +1,10 @@
 package application;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import Game.ChessGame;
@@ -19,7 +23,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -44,7 +50,16 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     private Button ChooseGameFile;
 
     @FXML
-    private TableView<?> MoveTable;
+    private TableView<MoveContainer> MoveTable;
+    
+    @FXML
+    private TableColumn<MoveContainer, String> columnID;
+
+    @FXML
+    private TableColumn<MoveContainer, String> columnWhite;
+
+    @FXML
+    private TableColumn<MoveContainer, String> columnBlack;
 
     @FXML
     private Button SaveGameFile;
@@ -99,7 +114,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
             		if(this.mainGame.figurePicked)//move figure
             		{
             			if(this.mainGame.game.move(this.mainGame.figureOnMove, this.mainGame.game.board.getField(col,row), this.mainGame.whitesMove) && this.mainGame.game.board.getField(col,row).getStyleClass().contains("highlight"))
+            			{
             				this.mainGame.whitesMove = !this.mainGame.whitesMove;
+            				this.updateTable();
+            			}
             			
             			
     					this.mainGame.figurePicked = false;
@@ -173,6 +191,8 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 			}
 			this.mainGame.figurePicked = false;
 			this.mainGame.figureOnMove = null;
+			
+			updateTable();
 		}
 	}
 	@FXML
@@ -191,6 +211,8 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 			}
 			this.mainGame.figurePicked = false;
 			this.mainGame.figureOnMove = null;
+			
+			updateTable();
 		}
 	
 	}
@@ -282,7 +304,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         
         
         chesspane.setPrefSize(600, 600);
-        chesspane.setMinSize(600, 600);
+        chesspane.setMinSize(400, 400);
         //put it together
         ((BorderPane)Game).setCenter(chesspane);
         ((BorderPane)Game).setMinSize(600, 600);
@@ -325,5 +347,102 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
        
     }
 	 
-
+    @FXML
+    void tableClicked(MouseEvent event) {
+    	//TODO problem v UNDO (mezera), INDEX NA kokot, zaokrouhlit
+    	int fromLine;
+    	int toLine;
+    	int histIndex = this.mainGame.game.getHistIndex() + 1;
+    	
+    	
+    	fromLine = (int) Math.floor( histIndex /2);
+    	
+    	toLine = Integer.parseInt(MoveTable.getSelectionModel().getSelectedItem().getID().get()) ;
+    	int diff = Math.abs(toLine - fromLine);
+    	
+    	
+    	diff *= 2;
+    	diff += histIndex %2 -1;
+    	/*
+    	if(histIndex % 2 == 1)
+    		diff--;
+    	*/
+    	for(int i = 0; i < diff; i++)
+    	{
+    		if(fromLine < toLine)
+    			this.redo();
+        	        	
+        	else if(fromLine > toLine)
+        		this.undo();
+        	       	
+    	}
+    	
+    	
+    		
+    	
+    	
+    	
+    	
+    	//System.out.println(MoveTable.getSelectionModel().getSelectedItem());
+    	
+    	System.out.println(fromLine + " " + toLine);
+    }
+    
+    
+    //TODO volani, zatim jen pri move undo a redo 
+    private void updateTable()
+    {
+    	MoveTable.getItems().clear();
+    	
+    	MoveContainer moveContainer;
+    	int id = 0;
+    	String  moves [] = new String[2];
+    	moves[0] = " ";
+    	moves[1] = " ";
+    	String move0 = "";
+    	String move1 = "";
+    	 try {
+         	BufferedReader reader = new BufferedReader(new FileReader("text.txt"));
+         	String CurrentLine;
+         	//StringBuffer sb=new StringBuffer("");
+         	
+         	columnID.setCellValueFactory(cellData -> cellData.getValue().getID());
+            columnWhite.setCellValueFactory(cellData -> cellData.getValue().getWhiteMove());
+            columnBlack.setCellValueFactory(cellData -> cellData.getValue().getBlackMove());
+         	
+         	while ((CurrentLine = reader.readLine()) != null) 
+             {
+         		id++;
+  
+      			moves = CurrentLine.split(" ");
+         		
+         		
+         		if(moves.length == 1)
+         		{
+         			move0 = moves[0];
+         			move1 = "";
+         		}
+         		else if(moves.length == 2)
+         		{
+         			move0 = moves[0];
+         			move1 = moves[1];
+         		}
+         		//System.out.println(moves[0]);
+         		//System.out.println(moves[1]);
+         		moveContainer = new MoveContainer(Integer.toString(id),move0,move1);
+         		
+         		
+         		MoveTable.getItems().add(moveContainer);
+         		
+         		//TableView
+         	 }
+         	reader.close();
+         
+ 			
+         }catch(Exception Ex){
+        	 Ex.printStackTrace();
+ 			System.out.println("fuasdck");
+         }
+    }
+    
 }
