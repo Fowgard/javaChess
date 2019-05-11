@@ -225,10 +225,10 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     }
 
     @FXML
-    void chooseFile(ActionEvent event) {
+    void chooseFile(ActionEvent event) throws Exception {
     	File file = this.fileChooser.showOpenDialog(stage);
     	
-    	moveParser= new moveParser(file);
+    	moveParser= new moveParser(file, mainGame);
     }
 
     @FXML
@@ -249,7 +249,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
     }
     
     @FXML
-    void addNewTab(Event event) throws IOException{
+    void addNewTab(Event event) throws Exception{
     	
     	
     	FXMLLoader loader = new FXMLLoader(View.class.getResource("Chess.fxml"));
@@ -264,7 +264,6 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 		
 		//pane with chess
 		GridPane chesspane = new GridPane();
-		//chesspane.setPadding(new Insets(10,20,20,20));
 		
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col ++) {
@@ -282,7 +281,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         
         
         chesspane.setPrefSize(600, 600);
-        chesspane.setMinSize(600, 600);
+        chesspane.setMinSize(400, 400);
         //put it together
         ((BorderPane)Game).setCenter(chesspane);
         ((BorderPane)Game).setMinSize(600, 600);
@@ -321,9 +320,9 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
 			}
         	
         });
-        
        
     }
+    
 	 
 
 }

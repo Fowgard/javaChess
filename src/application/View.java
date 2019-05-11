@@ -32,7 +32,7 @@ public class View extends Application {
         Scene scene = new Scene(root, 700, 700);
         scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
         
-    	primaryStage.setMinHeight(900);
+    	primaryStage.setMinHeight(700);
 		primaryStage.setMinWidth(1000);
         
         primaryStage.setScene(scene);

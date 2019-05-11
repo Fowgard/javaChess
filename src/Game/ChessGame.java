@@ -21,6 +21,7 @@ public class ChessGame {
 	private Board tmpBoard;
 	private boolean checkMate;
 	private boolean check;
+	private boolean loadingFile;
 	private ArrayList<Field> escape = new ArrayList<Field>();
 	private ArrayList<Field> escapeKing = new ArrayList<Field>();
 	private Stack<String> fileTmp = new Stack<String>();
@@ -93,44 +94,45 @@ public class ChessGame {
 			return false;
 		if(!figure.canmove(field,board))
 			return false;
-		
-		try
+		if(!this.loadingFile)
 		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
-			switch(figure.getType())
+			try
 			{
-				case 1:
-					//writer.append("p");
-					break;
-				case 2:
-					writer.append("V");
-					break;
-				case 3:
-					writer.append("J");
-					break;
-				case 4:
-					writer.append("S");
-					break;
-				case 5:
-					writer.append("D");
-					break;
-				case 6:
-					writer.append("K");
-					break;
+				BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
+				switch(figure.getType())
+				{
+					case 1:
+						//writer.append("p");
+						break;
+					case 2:
+						writer.append("V");
+						break;
+					case 3:
+						writer.append("J");
+						break;
+					case 4:
+						writer.append("S");
+						break;
+					case 5:
+						writer.append("D");
+						break;
+					case 6:
+						writer.append("K");
+						break;
+				}
+				writer.append((char)(97+figure.getCol()));
+				writer.append(Integer.toString(figure.getRow()+1));
+				if(!field.isEmpty())
+					writer.append("x");
+				writer.append((char)(97+field.getCol()));
+				writer.append(Integer.toString(field.getRow()+1));
+				writer.close();
 			}
-			writer.append((char)(97+figure.getCol()));
-			writer.append(Integer.toString(figure.getRow()+1));
-			if(!field.isEmpty())
-				writer.append("x");
-			writer.append((char)(97+field.getCol()));
-			writer.append(Integer.toString(field.getRow()+1));
-			writer.close();
+			catch (Exception ex)
+			{
+				System.out.println("fuck");
+			}
 		}
-		catch (Exception ex)
-		{
-			System.out.println("fuck");
-		}
-		
 		
 		changeHistory();
 		field.setFigure(figure);
@@ -151,20 +153,23 @@ public class ChessGame {
 		}
 		else 
 			this.check = false;
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
-			if(this.check)
-				if(this.checkMate)
-					writer.append("#");
+		if(!this.loadingFile)
+		{
+			try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
+				if(this.check)
+					if(this.checkMate)
+						writer.append("#");
+					else
+						writer.append("+");
+				if(!whitesMove)
+					writer.append("\n");
 				else
-					writer.append("+");
-			if(!whitesMove)
-				writer.append("\n");
-			else
-				writer.append(" ");
-			writer.close();
-		}catch(Exception ex) {
-			System.out.println("fuck");
+					writer.append(" ");
+				writer.close();
+			}catch(Exception ex) {
+				System.out.println("fuck");
+			}
 		}
 		addHistory();
 		
@@ -355,5 +360,9 @@ public class ChessGame {
 				return true;
 		}
 		return false;
+	}
+	
+	public void setLoadingFile(boolean loadingFile) {
+		this.loadingFile = loadingFile;
 	}
 }
