@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Stack;
 
 import Figures.Bishop;
@@ -203,12 +204,16 @@ public class ChessGame {
 			writer.write(sb.toString());
 			if(splited.length == 2)
 			{
-				this.fileTmp.add(" "+splited[1]);
-				writer.append(splited[0]);
+				this.fileTmp.add(" "+splited[1] + "\n");// 
+			
+				writer.append(splited[0]+" ");//TODO +" " correct??
 			}
 			else
-				this.fileTmp.add("\n"+splited[0]);
+				this.fileTmp.add(splited[0]); // "\n"+splited[0]
 			writer.close();
+			
+			System.out.println(Arrays.toString(fileTmp.toArray())); //prints out stack
+			
         }catch(Exception Ex){
 			System.out.println("fuck");
         }
@@ -227,6 +232,9 @@ public class ChessGame {
         	BufferedWriter writer = new BufferedWriter(new FileWriter("text.txt", true));
         	writer.append(fileTmp.pop());
         	writer.close();
+        	
+        	System.out.println(Arrays.toString(fileTmp.toArray())); //prints out stack
+        	
         }catch(Exception Ex){
         	
         }
