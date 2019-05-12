@@ -38,6 +38,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -584,7 +585,7 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
          			move1 = moves[1];
          		}
          		moveContainer = new MoveContainer(Integer.toString(id),move0,move1);
-         		
+         	
          		
          		MoveTable.getItems().add(moveContainer);
          	 }
@@ -595,7 +596,25 @@ public class ChessHandler  implements EventHandler<ActionEvent>{
         	 Ex.printStackTrace();
         	 this.mainGame.game.showError("File error");
          }
+    	 
+    	 MoveTable.setRowFactory(columnID -> new TableRow<MoveContainer>() {
+    		    @Override
+    		    public void updateItem(MoveContainer item, boolean empty) {
+    		        super.updateItem(item, empty) ;
+    		        System.out.println("ROWING");
+    		        if (item == null) {
+    		            setStyle("");
+    		        } else if (item.getID().get().equals(Integer.toString((mainGame.game.getHistIndex()/2)+Math.floorMod(mainGame.game.getHistIndex(), 2)) )) {
+    		            setStyle("-fx-background-color: #6b9cf2b3;");
+    		        } else {
+    		            setStyle("");
+    		        }
+    		    }
+    		});
     }
+    
+    //Integer.toString(mainGame.game.getHistIndex()/2)
+    
     /**
      * checks if a pawn can be promoted
      * @param figure the pawn being checked
